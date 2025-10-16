@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2025 at 03:20 AM
+-- Generation Time: Oct 16, 2025 at 06:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,28 +24,39 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbfollows`
+--
+
+CREATE TABLE `tbfollows` (
+  `id` int(11) NOT NULL,
+  `followee` int(11) NOT NULL,
+  `follower` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbimages`
 --
 
 CREATE TABLE `tbimages` (
   `imageId` int(11) NOT NULL,
   `postId` int(11) NOT NULL,
-  `image` varchar(250) NOT NULL
+  `image` varchar(250) NOT NULL,
+  `userId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbimages`
 --
 
-INSERT INTO `tbimages` (`imageId`, `postId`, `image`) VALUES
-(5, 18, 'uploads/img_68e4a10c35c6b3.84478987.jpg'),
-(6, 18, 'uploads/img_68e4a10c362ac9.94242979.jpg'),
-(7, 19, 'uploads/img_68e71155419bf3.36525092.jpg'),
-(8, 19, 'uploads/img_68e71155425d82.08101148.jpg'),
-(9, 20, 'uploads/img_68e711f84709a4.96621234.jpg'),
-(10, 20, 'uploads/img_68e711f8477fe7.29873698.jpg'),
-(11, 21, 'uploads/img_68e8a8ae325f60.17801515.jpg'),
-(12, 21, 'uploads/img_68e8a8ae32c9f8.23487542.jpg');
+INSERT INTO `tbimages` (`imageId`, `postId`, `image`, `userId`) VALUES
+(13, 23, 'uploads/img_68ece410a68312.56239217.jpg', 20),
+(14, 24, 'uploads/img_68ee14aeb70016.40697872.jpg', 21),
+(15, 24, 'uploads/img_68ee14aeb77d91.46524555.jpg', 21),
+(16, 25, 'uploads/img_68ee2919347387.63444999.jpg', 21),
+(17, 28, 'uploads/img_68f055bf4555b1.15851251.jpg', 23),
+(18, 29, 'uploads/img_68f05692a880e3.09214337.jpg', 23);
 
 -- --------------------------------------------------------
 
@@ -65,8 +76,9 @@ CREATE TABLE `tblogininfo` (
 --
 
 INSERT INTO `tblogininfo` (`userId`, `userEmail`, `username`, `password`) VALUES
-(17, 'dummyemail@mail.com', 'dummyuser', '$2y$10$lcoQsaPAsjIt6j8prvYYse/c2KTyx4FjccM5iFcFeXKK/nsnFmEUu'),
-(18, 'dummyemail1@mail.com', 'dummyuser1', '$2y$10$BSVDMbZB/79zBFyB0VWVdO3XcazccwaPBNkKGvGYTX1tFjdLqD6hq');
+(20, 'dummyemail2@mail.com', 'dummyuser2', '$2y$10$4nUq1cIFBfV.4Zzi4B0F8u11vm90bQVHEJknJG2Q00L6rE8V79hkK'),
+(21, 'dummyemail1@mail.com', 'dummyuser1', '$2y$10$Z6WDo.S.NOcfgQ02mNgBmehGc9z/1oWCHr3vJON8Dwtj1GRXQE5r6'),
+(23, 'dummyemail@mail.com', 'dummyuser', '$2y$10$Ld7xuncK4.aCoOVSOGldv.B/Cj6i1z7nAKNtnfXCJHBI184pYz.TO');
 
 -- --------------------------------------------------------
 
@@ -76,29 +88,41 @@ INSERT INTO `tblogininfo` (`userId`, `userEmail`, `username`, `password`) VALUES
 
 CREATE TABLE `tbposts` (
   `postId` int(11) NOT NULL,
-  `content` varchar(250) DEFAULT NULL
+  `content` varchar(250) DEFAULT NULL,
+  `userId` int(11) NOT NULL,
+  `category` enum('Plastic','Paper','Glass','Wood','Scrap Metal','Other(s)') NOT NULL DEFAULT 'Other(s)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbposts`
 --
 
-INSERT INTO `tbposts` (`postId`, `content`) VALUES
-(18, 'Test Upload'),
-(19, ''),
-(20, 'TEST'),
-(21, 'HAHA');
+INSERT INTO `tbposts` (`postId`, `content`, `userId`, `category`) VALUES
+(23, 'POGI', 20, 'Other(s)'),
+(24, 'GANDA', 21, 'Other(s)'),
+(25, 'WOOD', 21, 'Wood'),
+(28, 'Nostalgia', 23, 'Plastic'),
+(29, 'Nature', 23, 'Wood');
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `tbfollows`
+--
+ALTER TABLE `tbfollows`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `followee` (`followee`),
+  ADD KEY `follower` (`follower`);
+
+--
 -- Indexes for table `tbimages`
 --
 ALTER TABLE `tbimages`
   ADD PRIMARY KEY (`imageId`),
-  ADD KEY `postId` (`postId`);
+  ADD KEY `postId` (`postId`),
+  ADD KEY `userId` (`userId`);
 
 --
 -- Indexes for table `tblogininfo`
@@ -111,39 +135,60 @@ ALTER TABLE `tblogininfo`
 -- Indexes for table `tbposts`
 --
 ALTER TABLE `tbposts`
-  ADD PRIMARY KEY (`postId`);
+  ADD PRIMARY KEY (`postId`),
+  ADD KEY `userId` (`userId`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
+-- AUTO_INCREMENT for table `tbfollows`
+--
+ALTER TABLE `tbfollows`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tbimages`
 --
 ALTER TABLE `tbimages`
-  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `tblogininfo`
 --
 ALTER TABLE `tblogininfo`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `tbposts`
 --
 ALTER TABLE `tbposts`
-  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `tbfollows`
+--
+ALTER TABLE `tbfollows`
+  ADD CONSTRAINT `tbfollows_ibfk_1` FOREIGN KEY (`followee`) REFERENCES `tblogininfo` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `tbfollows_ibfk_2` FOREIGN KEY (`follower`) REFERENCES `tblogininfo` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `tbimages`
 --
 ALTER TABLE `tbimages`
-  ADD CONSTRAINT `tbimages_ibfk_1` FOREIGN KEY (`postId`) REFERENCES `tbposts` (`postId`);
+  ADD CONSTRAINT `tbimages_ibfk_1` FOREIGN KEY (`postId`) REFERENCES `tbposts` (`postId`),
+  ADD CONSTRAINT `tbimages_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
+
+--
+-- Constraints for table `tbposts`
+--
+ALTER TABLE `tbposts`
+  ADD CONSTRAINT `tbposts_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -14,7 +14,7 @@ $conn = connect();
 session_start();
 
 // Helper functions
-function checkDuplicateEmail($email) { // Check duplicate emails
+function checkDuplicateEmail($email) {
     $conn = connect();
     
     $sql =
@@ -25,7 +25,7 @@ function checkDuplicateEmail($email) { // Check duplicate emails
     else return false;
 }
 
-function checkDuplicateUsername($username) { // Check duplicate usernames
+function checkDuplicateUsername($username) {
     $conn = connect();
 
     $sql =
@@ -34,6 +34,81 @@ function checkDuplicateUsername($username) { // Check duplicate usernames
 
     if ($rs->num_rows > 0) return true;
     else return false;
+}
+
+function getAllUsers() {
+    $conn = connect();
+
+    $sql =
+        "SELECT userId, userEmail, username FROM tblogininfo";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        
+        $output = json_encode(null);
+
+    } else {
+
+        while ($row = $rs->fetch_assoc()) {
+            $users[] = $row;
+        }
+
+        $output = json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('users.json', $output);
+}
+
+function getUserDetails($user_email) {
+    $conn = connect();
+
+    $sql =
+        "SELECT userId, userEmail, username FROM tblogininfo WHERE userEmail='$user_email'";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        
+        $output = json_encode(null);
+
+    } else {
+
+        while ($row = $rs->fetch_assoc()) {
+            $user_info[] = $row;
+        }
+
+        $output = json_encode($user_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('user_info.json', $output);
+}
+
+function getPosts() {
+    $conn = connect();
+
+    $sql =
+        "SELECT tbimages.*, tbposts.content, tbposts.category FROM tbimages LEFT JOIN tbposts ON tbimages.postId=tbposts.postId";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        
+        $output = json_encode(null);
+
+    } else {
+
+        while ($row = $rs->fetch_assoc()) {
+            $posts[] = $row;
+        }
+
+        $output = json_encode($posts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('posts.json', $output);
+}
+
+function postingError($error_msg) {
+    setcookie('post_error', $error_msg); // Use this cookie to return an error message when redirected
+    header('Location: home.php');
+    exit();
 }
 
 
@@ -65,8 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sign_up'])) { // User 
     $sign_up->bind_param('sss',$email,$username,$hash_password);
     
     if ($sign_up->execute()) {
-        $_SESSION['email'] = $email;
-        $_SESSION['username'] = $username;
+        $_SESSION['user'] = $email;
         header('Location: register.php');
     } else {
         echo "
@@ -105,13 +179,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['log_in'])) { // User l
     }
 }
 
-function postingError($error_msg) { // Helper function
-    setcookie('post_error', $error_msg); // Use this cookie to return an error message when redirected
-    header('Location: home.php');
-    exit();
-}
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // Create post
+
+    $user_id = $_POST['user_id'];
+    $post_category = $_POST['category'];
 
     $upload_directory = 'uploads/';
     $allowed_extensions = array('jpg','jpeg','png');
@@ -153,11 +224,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
 
         $sql =
             "INSERT INTO tbposts
-            (`content`)
+            (`content`,`userId`,`category`)
             VALUES
-            (?)";
+            (?,?,?)";
         $post_content = $conn->prepare($sql);
-        $post_content->bind_param('s', $_POST['text_content']);
+        $post_content->bind_param('sss', $_POST['text_content'],$user_id,$post_category);
 
         if ($post_content->execute()) { // Upload post content/text
 
@@ -178,11 +249,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
                     
                     $sql =
                         "INSERT INTO tbimages
-                        (`postId`,`image`)
+                        (`postId`,`image`,`userId`)
                         VALUES
-                        (?,?)";
+                        (?,?,?)";
                     $upload_images = $conn->prepare($sql);
-                    $upload_images->bind_param('ss',$post_id['postId'],$destination);
+                    $upload_images->bind_param('sss',$post_id['postId'],$destination,$user_id);
                     
                     if ($upload_images->execute()) {
                         header('Location: home.php');
@@ -204,29 +275,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
         postingError('Error uploading files');
     }
 
-}
-
-function getPosts() {
-    $conn = connect();
-
-    $sql =
-        "SELECT tbimages.*, tbposts.content FROM tbimages LEFT JOIN tbposts ON tbimages.postId=tbposts.postId";
-    $rs = $conn->query($sql);
-
-    if ($rs->num_rows === 0) {
-        
-        $output = json_encode(null);
-
-    } else {
-
-        while ($row = $rs->fetch_assoc()) {
-            $posts[] = $row;
-        }
-
-        $output = json_encode($posts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    }
-
-    file_put_contents('posts.json', $output);
 }
 
 ?>

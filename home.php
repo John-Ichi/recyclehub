@@ -2,10 +2,12 @@
 
 include 'functions.php';
 
-if (!isset($_SESSION['email']) && !isset($_SESSION['username']) && !isset($_SESSION['user'])) {
+if (!isset($_SESSION['user'])) {
     header('Location: index.php');
 }
 
+getAllUsers();
+getUserDetails($_SESSION['user']);
 getPosts();
 
 ?>
@@ -67,26 +69,66 @@ getPosts();
 </head>
 <body>
     <h1>News Feed</h1>
+    
+    <input type="text" id="searchBar" name="searchUser" placeholder="Search users..." autocomplete="off">
+    <button id="searchButton">Search</button>
+    
+    <a href="profile.php">Profile</a>
+    
     <button id="createPost">Create Post</button>
     <button id="logOut">Log Out</button>
 
-    <div class="posts"> <!-- Posts -->
-
+    <div class="filterSelect">
+        <input type="checkbox" id="plastic" name="plastic" class="filterPosts" value="Plastic">
+        <label for="plastic">Plastic</label>
+        <input type="checkbox" id="paper" name="paper" class="filterPosts" value="Paper">
+        <label for="paper">Paper</label>
+        <input type="checkbox" id="glass" name="glass" class="filterPosts" value="Glass">
+        <label for="glass">Glass</label>
+        <input type="checkbox" id="wood" name="wood" class="filterPosts" value="Wood">
+        <label for="wood">Wood</label>
+        <input type="checkbox" id="scrapMetal" name="scrapMetal" class="filterPosts" value="Scrap Metal">
+        <label for="scrapMetal">Scrap Metal</label>
+        <input type="checkbox" id="other" name="other" class="filterPosts" value="Other(s)">
+        <label for="other">Other</label>
     </div>
 
+    <div class="posts"></div> <!-- Posts -->
+
     <div id="postModal" class="modal">
+
         <div class="modal-content">
+
             <span class="close">&times;</span>
+
             <h2>What are your recycling ideas?</h2>
+
             <form id="postForm" action="functions.php" method="POST" enctype="multipart/form-data">
+
+                <input type="hidden" name="user_id" id="imageUploadUserId">
+
                 <input type="file" name="images[]" id="imageUpload" accept="image/png, image/jpeg" multiple required>
-                    <div id="previewContainer">
-                    </div>
-                <br>
+
+                <select name="category" id="postCategory" required>
+                    <option value="" selected disabled hidden></option>
+                    <option value="Plastic">Plastic</option>
+                    <option value="Paper">Paper</option>
+                    <option value="Glass">Glass</option>
+                    <option value="Wood">Wood</option>
+                    <option value="Scrap Metal">Scrap Metal</option>
+                    <option value="Other(s)">Other(s)</option>
+                </select>
+
+                    <div id="previewContainer"></div><br>
+
                 <textarea name="text_content" rows="10" cols="100%" maxlength="250"></textarea>
+                
                 <button type="submit" name="create_post">Create Post</button>
+            
             </form>
+
         </div>
+
     </div>
 </body>
 
@@ -94,71 +136,49 @@ getPosts();
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
     }
+</script>
 
-    btn = document.getElementById("logOut"); // Log out API call
-    btn.addEventListener("click", () => {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                if (xhttp.responseText == "true") {
-                    window.location.href = "index.php";
-                }
-            }
-        };
-        xhttp.open("GET", "session_unset.php", true);
-        xhttp.send();
-    });
-
-    const postModal = document.getElementById("postModal");
-    const postBtn = document.getElementById("createPost");
-    const postForm = document.getElementById("postForm");
-    const imageUpload = document.getElementById("imageUpload");
-    const previewContainer = document.getElementById("previewContainer");
-    const closeBtn = document.getElementsByClassName("close")[0];
-
-    postBtn.addEventListener("click", () => {
-        postModal.style.display = "block";
-    });
-
-    closeBtn.addEventListener("click", () => { // Close post modal [note: add a confirmation for discarding post]
-        postForm.reset();
-        previewContainer.innerHTML = "";
-        postModal.style.display = "none";
-    });
-
-    // Image preview for selected images
-    imageUpload.addEventListener("change", () => {
-        previewContainer.innerHTML = "";
-
-        const MAX_FILE_SIZE = 10 * 1024 * 1024;
-        const files = imageUpload.files;
-        const numOfFiles = imageUpload.files.length;
-
-        if (numOfFiles > 10) { // Limit number of posts client-side
-            alert("The maximum number of uploads is 10.");
-            imageUpload.value = "";
-            return;
-        } else {
-            for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    alert("The maximum file size allowed is 10 MB."); // Client-side file size check
-                    imageUpload.value = ""; 
-                    return;
-                } else {
-                    const reader = new FileReader();
-                    reader.addEventListener("load", (e) => {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.classList.add("thumbnail");
-                        previewContainer.appendChild(img);
-                    });
-                    reader.readAsDataURL(file);
-                }
-            }
-        }
+<script> // Set user ID for posting
+    fetch("user_info.json")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("imageUploadUserId").value = data[0].userId;
     });
 </script>
 
 <script src="home.js" defer></script>
+
+<script src="verify_post.js" defer></script>
+
+<script src="logout.js" defer></script>
+
+<script>
+    // Search script
+    const searchBar = document.getElementById("searchBar");
+    searchBar.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); //
+
+            const searchInput = searchBar.value.trim();
+
+            if (searchInput !== "") {
+                const urlParameters = "searchUser=" + searchInput;
+                window.open(`search.php?${urlParameters}`);
+            }
+        }
+    });
+
+    const searchButton = document.getElementById("searchButton");
+    searchButton.addEventListener("click", () => {
+        const searchInput = searchBar.value.trim();
+
+        if (searchInput !== "") {
+            const urlParameters = "searchUser=" + searchInput;
+            window.open("search.php?" + urlParameters);
+        } else {
+            window.open("search.php");
+        }
+    });
+</script>
 
 </html>

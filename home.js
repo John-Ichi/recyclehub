@@ -1,10 +1,31 @@
-let posts = []
+let filterArray = [];
+
+const filterSelection = document.querySelectorAll(".filterPosts");
 
 fetch("posts.json")
 .then(res => res.json())
 .then(data => {
-    console.log(data); // Debug
-    renderPosts(data);
+    filterSelection.forEach(btn => { // Filter
+        btn.addEventListener("change", () => { // Check each checkbox
+            if (btn.checked) { // Push the value of checked boxes in the filterArray
+                filterArray.push(btn.value);
+            } else {
+                let index = filterArray.indexOf(btn.value); // Remove when unchecked
+                filterArray.splice(index, 1);
+            }
+
+            if (filterArray.length === 0) { // If the filterArray is empty, there are no filters then render all posts
+                renderPosts(data);
+                return;
+            }
+
+            const filteredPosts = data.filter(post => filterArray.includes(post.category));
+
+            renderPosts(filteredPosts);
+        });
+        
+        renderPosts(data);
+    });
 });
 
 const postsDiv = document.querySelector(".posts");
@@ -12,16 +33,15 @@ const postsDiv = document.querySelector(".posts");
 function renderPosts(posts) {
     postsDiv.innerHTML = "";
 
-    // Group posts by ID
     const groupedPosts = posts.reduce((groupedPostsArray, post) => { // Initialize array for grouping, iterate through posts by element post
         if (!groupedPostsArray[post.postId]) { // If post ID is not in new array
             groupedPostsArray[post.postId] = []; // Create a new array for post with ID 
         }
+
         groupedPostsArray[post.postId].push(post); // Push post info to the array
         return groupedPostsArray;
     }, {}); // Curly braces here is the groupedPostsArray
 
-    // Render posts
     Object.entries(groupedPosts).forEach(([id, group]) => { // Iterate through groupedPostsArray per ID/go into each group of posts/images per ID
         const innerPostDiv = document.createElement("div");
         innerPostDiv.classList.add("post");
@@ -29,7 +49,6 @@ function renderPosts(posts) {
         const caption = document.createElement("p"); // Create paragraph element for caption
         caption.textContent = group[0].content || ""; // Per group, use the first group.content [since all content per group is the same]
 
-        // Adding images
         group.forEach(post => { // Iterate through each group
             if (post.image != null) { // If image exists
                 const img = document.createElement("img"); // Create img element
@@ -38,7 +57,6 @@ function renderPosts(posts) {
             }
         });
         
-        // Add caption if it exists
         if (caption.textContent != "") {
             innerPostDiv.appendChild(caption);
         }

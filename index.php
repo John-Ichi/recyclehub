@@ -2,7 +2,7 @@
 
 include 'functions.php';
 
-if (isset($_SESSION['email']) || isset($_SESSION['username']) || isset($_SESSION['user'])) {
+if (isset($_SESSION['user'])) {
     header('Location: home.php');
 }
 
@@ -24,7 +24,7 @@ if (isset($_SESSION['email']) || isset($_SESSION['username']) || isset($_SESSION
     }
     
     ?>
-    <form action="functions.php" method="POST">
+    <form action="functions.php" method="POST" autocomplete="off">
         <input type="text" name="user" placeholder="Email or username">
         <input type="password" name="password" placeholder="Password">
         <button type="submit" name="log_in">Log In</button>
