@@ -18,56 +18,19 @@ getPosts();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Style/home-style.css">
     <title>RecycleHub</title>
-    
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0,);
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover, .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .thumbnail {
-            height: 10%;
-            width: 10%;
-        }
-
-        img {
-            height: 10%;
-            width: 10%;
-        }
-    </style>
-
 </head>
+<script>
+// Quick test - try loading one image directly
+const testImg = new Image();
+testImg.onload = () => console.log('✓ Test image loaded successfully');
+testImg.onerror = () => console.error('✗ Test image failed - check path and folder permissions');
+testImg.src = 'uploads/img_68ece410a68312.56239217.jpg'; // Use one of your actual image names
+console.log('Testing image path:', testImg.src);
+</script>
 <body>
+    <div class="left-sidebar">
     <h1>News Feed</h1>
     
     <input type="text" id="searchBar" name="searchUser" placeholder="Search users..." autocomplete="off">
@@ -75,7 +38,6 @@ getPosts();
     
     <a href="profile.php">Profile</a>
     
-    <button id="createPost">Create Post</button>
     <button id="logOut">Log Out</button>
 
     <div class="filterSelect">
@@ -92,13 +54,26 @@ getPosts();
         <input type="checkbox" id="other" name="other" class="filterPosts" value="Other(s)">
         <label for="other">Other</label>
     </div>
+</div>
+
+<div class="content-area">
+    <!-- Create Post Card - Sticky at top -->
+    <div class="create-post-wrapper">
+        <div class="create-post-card" id="createPostCard">
+            <div class="create-post-header">
+                <div class="create-post-avatar"></div>
+                <div class="create-post-input">What's on your mind?</div>
+            </div>
+        </div>
+    </div>
 
     <div class="posts"></div> <!-- Posts -->
+            
+            <!-- Posts will be dynamically loaded here by JavaScript -->
+</div>
 
     <div id="postModal" class="modal">
-
         <div class="modal-content">
-
             <span class="close">&times;</span>
 
             <h2>What are your recycling ideas?</h2>
@@ -119,17 +94,17 @@ getPosts();
                     <option value="Other(s)">Other(s)</option>
                 </select>
 
-                    <div id="previewContainer"></div><br>
+                <div id="previewContainer"></div><br>
 
-                <textarea name="text_content" rows="10" cols="100%" maxlength="250"></textarea>
+                <textarea name="text_content" rows="10" cols="100%" maxlength="250" placeholder="Share your recycling ideas..."></textarea>
                 
                 <button type="submit" name="create_post">Create Post</button>
             
             </form>
 
         </div>
-
     </div>
+    <script src="hybrid_image_display.js" defer></script>
 </body>
 
 <script>
@@ -157,7 +132,7 @@ getPosts();
     const searchBar = document.getElementById("searchBar");
     searchBar.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-            e.preventDefault(); //
+            e.preventDefault();
 
             const searchInput = searchBar.value.trim();
 
@@ -179,6 +154,72 @@ getPosts();
             window.open("search.php");
         }
     });
+</script>
+
+<script>
+    // Open modal when clicking the create post card
+    document.getElementById('createPostCard').addEventListener('click', function() {
+        document.getElementById('postModal').style.display = 'block';
+    });
+
+    // Close modal when clicking the X
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('postModal').style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('postModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+</script>
+<script>
+// Image Preview Functionality
+document.getElementById('imageUpload').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('previewContainer');
+    previewContainer.innerHTML = ''; // Clear existing previews
+    
+    const files = e.target.files;
+    
+    if (files.length > 0) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+               reader.onload = function(e) {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.maxWidth = '400px';  // Maximum width
+    img.style.maxHeight = '400px'; // Maximum height
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
+    img.style.border = '2px solid #c8dfc8';
+    img.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    previewContainer.appendChild(img);
+};            
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+// Clear preview when modal closes
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('previewContainer').innerHTML = '';
+    document.getElementById('postForm').reset();
+});
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('postModal');
+    if (e.target === modal) {
+        document.getElementById('previewContainer').innerHTML = '';
+        document.getElementById('postForm').reset();
+    }
+});
 </script>
 
 </html>

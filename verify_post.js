@@ -1,15 +1,14 @@
 const postModal = document.getElementById("postModal");
-const postBtn = document.getElementById("createPost");
 const postForm = document.getElementById("postForm");
 const imageUpload = document.getElementById("imageUpload");
 const previewContainer = document.getElementById("previewContainer");
 const closeBtn = document.getElementsByClassName("close")[0];
 
-postBtn.addEventListener("click", () => {
-    postModal.style.display = "block";
-});
+// Modal is opened by the createPostCard click handler in home.php
+// So we don't need to add another event listener here
 
-closeBtn.addEventListener("click", () => { // Close post modal [note: add a confirmation for discarding post]
+closeBtn.addEventListener("click", () => { 
+    // Close post modal [note: add a confirmation for discarding post]
     postForm.reset();
     previewContainer.innerHTML = "";
     postModal.style.display = "none";
