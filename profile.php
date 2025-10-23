@@ -38,6 +38,4 @@ getPosts();
 
 <script src="display_user_posts.js" defer></script>
 
-
-
 </html>

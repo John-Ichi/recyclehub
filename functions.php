@@ -59,11 +59,15 @@ function getAllUsers() {
     file_put_contents('users.json', $output);
 }
 
-function getUserDetails($user_email) {
+function getUserDetails($user) {
     $conn = connect();
 
     $sql =
-        "SELECT userId, userEmail, username FROM tblogininfo WHERE userEmail='$user_email'";
+        "SELECT tblogininfo.userId, tblogininfo.userEmail, tblogininfo.username, tbfollows.*
+        FROM tblogininfo
+        LEFT JOIN tbfollows
+        ON tblogininfo.userId=tbfollows.follower
+        WHERE userEmail='$user' OR username='$user'";
     $rs = $conn->query($sql);
 
     if ($rs->num_rows === 0) {
@@ -86,7 +90,10 @@ function getPosts() {
     $conn = connect();
 
     $sql =
-        "SELECT tbimages.*, tbposts.content, tbposts.category FROM tbimages LEFT JOIN tbposts ON tbimages.postId=tbposts.postId";
+        "SELECT tbimages.*, tbposts.content, tbposts.category
+        FROM tbimages
+        LEFT JOIN tbposts
+        ON tbimages.postId=tbposts.postId";
     $rs = $conn->query($sql);
 
     if ($rs->num_rows === 0) {
@@ -140,7 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sign_up'])) { // User 
     $sign_up->bind_param('sss',$email,$username,$hash_password);
     
     if ($sign_up->execute()) {
-        $_SESSION['user'] = $email;
+        $_SESSION['username'] = $username;
+        $_SESSION['useremail'] = $email;
         header('Location: register.php');
     } else {
         echo "
@@ -195,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
         }
 
         $MAX_FILE_SIZE = 10 * 1024 * 1024;
-        $MAX_NUM_OF_POSTS = 10;
+        $MAX_NUM_OF_POSTS = 5;
 
         if (count($_FILES['images']['name']) > $MAX_NUM_OF_POSTS) { // Validate number of posts
             postingError('The maximum number of uploads is ten (10).');

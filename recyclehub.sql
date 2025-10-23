@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2025 at 06:10 AM
+-- Generation Time: Oct 23, 2025 at 03:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,8 +30,16 @@ SET time_zone = "+00:00";
 CREATE TABLE `tbfollows` (
   `id` int(11) NOT NULL,
   `followee` int(11) NOT NULL,
-  `follower` int(11) NOT NULL
+  `follower` int(11) NOT NULL,
+  `timeCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbfollows`
+--
+
+INSERT INTO `tbfollows` (`id`, `followee`, `follower`, `timeCreated`) VALUES
+(38, 21, 23, '2025-10-23 09:00:07');
 
 -- --------------------------------------------------------
 
@@ -146,7 +154,7 @@ ALTER TABLE `tbposts`
 -- AUTO_INCREMENT for table `tbfollows`
 --
 ALTER TABLE `tbfollows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `tbimages`

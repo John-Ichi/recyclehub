@@ -33,6 +33,9 @@ const postsDiv = document.querySelector(".posts");
 function renderPosts(posts) {
     postsDiv.innerHTML = "";
 
+    /** Set non-integer ID to order posts based on php SELECT */
+    /** Randomize posts */
+
     const groupedPosts = posts.reduce((groupedPostsArray, post) => { // Initialize array for grouping, iterate through posts by element post
         if (!groupedPostsArray[post.postId]) { // If post ID is not in new array
             groupedPostsArray[post.postId] = []; // Create a new array for post with ID 

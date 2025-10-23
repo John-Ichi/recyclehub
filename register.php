@@ -2,7 +2,7 @@
 
 include 'functions.php';
 
-if (isset($_SESSION['user'])) {
+if (isset($_SESSION['user']) || isset($_SESSION['username']) || isset($_SESSION['useremail'])) {
     header('Location: home.php');
 }
 

@@ -23,8 +23,8 @@ imageUpload.addEventListener("change", () => {
     const files = imageUpload.files;
     const numOfFiles = imageUpload.files.length;
 
-    if (numOfFiles > 10) { // Limit number of posts client-side
-        alert("The maximum number of uploads is 10.");
+    if (numOfFiles > 5) { // Limit number of posts client-side
+        alert("The maximum number of uploads is 5.");
         imageUpload.value = "";
         previewContainer.innerHTML = "";
         return;

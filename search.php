@@ -2,11 +2,20 @@
 
 include 'functions.php';
 
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user']) && !isset($_SESSION['username']) && !isset($_SESSION['useremail'])) {
     header('Location: index.php');
 }
 
+if (isset($_SESSION['user'])) {
+    getUserDetails($_SESSION['user']);
+} else if (isset($_SESSION['username'])) {
+    getUserDetails($_SESSION['username']);
+} else if (isset($_SESSION['useremail'])) {
+    getUserDetails($_SESSION['useremail']);
+}
+
 getAllUsers();
+getPosts();
 
 ?>
 
@@ -16,6 +25,13 @@ getAllUsers();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RecycleHub</title>
+
+    <style>
+        .followeeInput, .followerInput, .submitInput {
+            display: none;
+        }
+    </style>
+
 </head>
 <body>
     <h1>Users</h1>

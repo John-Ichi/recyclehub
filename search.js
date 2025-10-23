@@ -21,7 +21,6 @@ noUsersMessage.textContent = "No user(s) found.";
 fetch("users.json") // Fetch all users
 .then(res => res.json())
 .then(data => {
-    const currentUserId = document.getElementById("userId").value; // Reference current user ID (ID of logged in user)
     let filteredUsers = []; // Initialize filteredUsers array
 
     searchBar.addEventListener("input", () => { // Check for search inputs
@@ -35,11 +34,9 @@ fetch("users.json") // Fetch all users
                 usersDiv.appendChild(noUsersMessage); // Show no user(s) found
             } else {
                 renderUsers(filteredUsers); // Else render filtered users
-                redirectCurrentUserToProfile(currentUserId);
             }
         } else {
             renderUsers(data); // Render all users when search bar is cleared
-            redirectCurrentUserToProfile(currentUserId);
         }
     });
 
@@ -53,68 +50,165 @@ fetch("users.json") // Fetch all users
             usersDiv.appendChild(noUsersMessage); // Show no user(s) found
         } else {
             renderUsers(filteredUsers); // Render filtered users
-            redirectCurrentUserToProfile(currentUserId);
         }
     } else {
         renderUsers(data); // Render all users if there is no search input from home.php
-        redirectCurrentUserToProfile(currentUserId);
     }
 
-    redirectCurrentUserToProfile(currentUserId);
+    const followForms = document.querySelectorAll(".followForm"); // Follow forms
+    const unfollowForms = document.querySelectorAll(".unfollowForm"); // Unfollow forms
+    const forms = [...followForms, ...unfollowForms]; // Merge forms
 
-    const followForms = document.querySelectorAll(".followForm");
-    followForms.forEach(form => {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
+    usersDiv.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-            const formData = new FormData(form)
+        const form = e.target.closest(".followForm, .unfollowForm");
+        if (form === null) {
+            return;
+        }
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "follow.php");
-            xhttp.send(formData);
-        });
+        const formData = new FormData(form);
+
+        var followXhttp = new XMLHttpRequest();
+        followXhttp.onreadystatechange = function() { // Asynchronous POST
+            if (this.readyState == 4 && this.status == 200) {
+                if (form.firstChild.value === this.responseText) { // Followee ID matches response text
+                    if (form.classList == "followForm") { // If follow
+                        // Render follow as unfollow
+                        form.classList.replace("followForm", "unfollowForm");
+
+                        const submitInput = form.querySelector(".submitInput");
+                        submitInput.name = "unfollow_user";
+
+                        const followButton = form.querySelector(".follow");
+                        followButton.classList.replace("follow", "unfollow");
+                        followButton.textContent = "Unfollow";
+                    } else if (form.classList == "unfollowForm") { // If unfollow
+                        // Render unfollow as follow
+                        form.classList.replace("unfollowForm", "followForm");
+                        
+                        const submitInput = form.querySelector(".submitInput");
+                        submitInput.name = "follow_user";
+
+                        const unfollowButton = form.querySelector(".unfollow");
+                        unfollowButton.classList.replace("unfollow", "follow");
+                        unfollowButton.textContent = "Follow";
+                    }
+                }
+            }
+        }
+
+        followXhttp.open("POST", "follow.php", true);
+        followXhttp.send(formData);
+        
+        var updateXhttp = new XMLHttpRequest();
+        updateXhttp.onreadystatechange = function() { // Update users followed
+            if (this.readyState == 4 && this.status == 200) {
+                fetch("user_info.json")
+                .then(res => res.json())
+                .then(data => {
+                    let usersFollowed = [];
+
+                    data.forEach(user => {
+                        usersFollowed.push(user.followee);
+                    });
+
+                    window.usersFollowed = data.map(u => u.followee);
+                });
+            }
+        }
+
+        updateXhttp.open("GET", "update_user_info.php", true);
+        updateXhttp.send();
     });
 });
 
 function renderUsers(users) {
     usersDiv.innerHTML = ""; // Clear users div
 
+    const currentUserId = document.getElementById("userId").value; // Get current user ID
+
     users.forEach(user => { // For each user
         const userDiv = document.createElement("div"); // Create a div
         userDiv.classList.add("user"); // With class "user"
+        userDiv.id = user.userId;
 
         const username = document.createElement("a"); // Create an href a element
         username.classList.add("username"); // With class "username"
         username.id = user.userId;
-        username.textContent = user.username;
         username.href = `user.php?user=${user.userId}`; // URL
         username.target = "_blank"; // New page
+        username.textContent = user.username;
 
-        const followForm = document.createElement("form");
-        followForm.classList.add("followForm");
-        followForm.method = "POST";
+        userDiv.appendChild(username); // Append user info
 
-        const followeeInput = document.createElement("input");
+        const followeeInput = document.createElement("input"); // Followee ID (ID of the user being followed)
+        followeeInput.classList.add("followeeInput");
         followeeInput.type = "text";
         followeeInput.name = "followee_id";
         followeeInput.value = user.userId;
 
-        const followerInput = document.createElement("input");
+        const followerInput = document.createElement("input"); // Follower ID (ID of the user following)
+        followerInput.classList.add("followerInput");
         followerInput.type = "text";
         followerInput.name = "follower_id";
-        followerInput.value = document.getElementById("userId").value;
+        followerInput.value = currentUserId;
 
-        const followButton = document.createElement("button");
-        followButton.name = "follow_user";
+        const followUser = document.createElement("input"); // Follow validation
+        followUser.classList.add("submitInput");
+        followUser.type = "text";
+        followUser.name = "follow_user";
+        followUser.value = "true";
+
+        const unfollowUser = document.createElement("input"); // Unfollow validation
+        unfollowUser.classList.add("submitInput");
+        unfollowUser.type = "text";
+        unfollowUser.name = "unfollow_user";
+        unfollowUser.value = "true";
+
+        const followButton = document.createElement("button"); // Follow button
+        followButton.classList.add("follow");
+        followButton.type = "submit";
         followButton.textContent = "Follow";
 
-        followForm.appendChild(followeeInput);
-        followForm.appendChild(followerInput);
-        followForm.appendChild(followButton);
+        const unfollowButton = document.createElement("button"); // Unfollow button
+        unfollowButton.classList.add("unfollow");
+        unfollowButton.type = "submit";
+        unfollowButton.textContent = "Unfollow";
+
+        const usersFollowed = window.usersFollowed;
+
+        if (usersFollowed.includes(user.userId)) { // If the user is being followed
+            const unfollowForm = document.createElement("form");
+            unfollowForm.classList.add("unfollowForm");
+            unfollowForm.action = "follow.php";
+            unfollowForm.method = "POST";
+
+            unfollowForm.appendChild(followeeInput);
+            unfollowForm.appendChild(followerInput);
+            unfollowForm.appendChild(unfollowUser);
+            unfollowForm.appendChild(unfollowButton);
+
+            userDiv.appendChild(unfollowForm);
+        } else {
+            const followForm = document.createElement("form");
+            followForm.classList.add("followForm");
+            followForm.action = "follow.php";
+            followForm.method = "POST";
+
+            followForm.appendChild(followeeInput);
+            followForm.appendChild(followerInput);
+            followForm.appendChild(followUser);
+            followForm.appendChild(followButton);
+
+            if (userDiv.firstChild.id !== currentUserId) {
+                userDiv.appendChild(followForm);
+            }
+        }
         
-        userDiv.appendChild(username);
-        userDiv.appendChild(followForm);
-        usersDiv.appendChild(userDiv);
+        usersDiv.appendChild(userDiv); // Append div
+
+        redirectCurrentUserToProfile(currentUserId);
     });
 }
 
