@@ -3,9 +3,9 @@
         "userId": "23",
         "userEmail": "dummyemail@mail.com",
         "username": "dummyuser",
-        "id": "38",
-        "followee": "21",
-        "follower": "23",
-        "timeCreated": "2025-10-23 09:00:07"
+        "id": null,
+        "followee": null,
+        "follower": null,
+        "timeCreated": null
     }
 ]

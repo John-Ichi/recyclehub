@@ -1,35 +1,34 @@
-// Clear URL after reloading
 let url = new URL(window.location.href);
 url.search = "";
 
-if (performance.getEntriesByType("navigation")[0].type === "reload") {
+if (performance.getEntriesByType("navigation")[0].type === "reload") { // Clear URL when reloaded
     window.history.replaceState(null, null, url);
 }
 
-const usersDiv = document.querySelector(".users"); // Referencing users div
+const usersDiv = document.querySelector(".users");
 
 const searchBar = document.getElementById("searchBar");
 let searchBarInput = ""; 
 
 const homeSearch = new URLSearchParams(window.location.search);
-let homeSearchInput = homeSearch.get("searchUser"); // Search input from home.php
-searchBar.value = homeSearchInput; // Insert input from home.php into search.php search bar
+let homeSearchInput = homeSearch.get("searchUser");
+searchBar.value = homeSearchInput;
 
-const noUsersMessage = document.createElement("p"); // No user(s) found message
+const noUsersMessage = document.createElement("p");
 noUsersMessage.textContent = "No user(s) found.";
 
-fetch("users.json") // Fetch all users
+fetch("users.json")
 .then(res => res.json())
 .then(data => {
-    let filteredUsers = []; // Initialize filteredUsers array
+    let filteredUsers = [];
 
-    searchBar.addEventListener("input", () => { // Check for search inputs
+    searchBar.addEventListener("input", () => {
         searchBarInput = searchBar.value.trim().toLowerCase(); // Case sensitivity
 
-        filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(searchBarInput)); // Case-insensitive filter
+        filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(searchBarInput));
 
-        if (searchBarInput !== "") { // Check if there are inputs in the search bar
-            if (filteredUsers.length === 0) { // No matches
+        if (searchBarInput !== "") {
+            if (filteredUsers.length === 0) {
                 usersDiv.innerHTML = "";
                 usersDiv.appendChild(noUsersMessage); // Show no user(s) found
             } else {
@@ -40,10 +39,10 @@ fetch("users.json") // Fetch all users
         }
     });
 
-    if (homeSearchInput !== null) { // Search from home
-        homeSearchInput = homeSearchInput.trim().toLowerCase(); // Case sensitivity
+    if (homeSearchInput !== null) { // Search from home.php
+        homeSearchInput = homeSearchInput.trim().toLowerCase();
         
-        filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(homeSearchInput)); // Case-insensitive filter
+        filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(homeSearchInput));
 
         if (filteredUsers.length === 0) { // If no users found
             usersDiv.innerHTML = "";
@@ -55,12 +54,10 @@ fetch("users.json") // Fetch all users
         renderUsers(data); // Render all users if there is no search input from home.php
     }
 
-    const followForms = document.querySelectorAll(".followForm"); // Follow forms
-    const unfollowForms = document.querySelectorAll(".unfollowForm"); // Unfollow forms
-    const forms = [...followForms, ...unfollowForms]; // Merge forms
-
     usersDiv.addEventListener("submit", (e) => {
         e.preventDefault();
+
+        console.log("Form submitted!");
 
         const form = e.target.closest(".followForm, .unfollowForm");
         if (form === null) {
@@ -70,11 +67,10 @@ fetch("users.json") // Fetch all users
         const formData = new FormData(form);
 
         var followXhttp = new XMLHttpRequest();
-        followXhttp.onreadystatechange = function() { // Asynchronous POST
-            if (this.readyState == 4 && this.status == 200) {
-                if (form.firstChild.value === this.responseText) { // Followee ID matches response text
-                    if (form.classList == "followForm") { // If follow
-                        // Render follow as unfollow
+        followXhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) { // Request completed
+                if (form.firstChild.value === this.responseText) {
+                    if (form.classList == "followForm") { // Update forms accordingly
                         form.classList.replace("followForm", "unfollowForm");
 
                         const submitInput = form.querySelector(".submitInput");
@@ -83,8 +79,7 @@ fetch("users.json") // Fetch all users
                         const followButton = form.querySelector(".follow");
                         followButton.classList.replace("follow", "unfollow");
                         followButton.textContent = "Unfollow";
-                    } else if (form.classList == "unfollowForm") { // If unfollow
-                        // Render unfollow as follow
+                    } else if (form.classList == "unfollowForm") {
                         form.classList.replace("unfollowForm", "followForm");
                         
                         const submitInput = form.querySelector(".submitInput");
@@ -94,32 +89,34 @@ fetch("users.json") // Fetch all users
                         unfollowButton.classList.replace("unfollow", "follow");
                         unfollowButton.textContent = "Follow";
                     }
+
+                    console.log("Form updated!");
                 }
+
+                var updateXhttp = new XMLHttpRequest();
+                updateXhttp.onreadystatechange = function() { // Update fetched data
+                    if (this.readyState == 4 && this.status == 200) { // After forms submitted and updated
+                        fetch("user_info.json")
+                        .then(res => res.json())
+                        .then(data => {
+                            let usersFollowed = [];
+
+                            data.forEach(user => {
+                                usersFollowed.push(user.followee);
+                            });
+
+                            window.usersFollowed = data.map(u => u.followee);
+                        });
+                    }
+                }
+
+                updateXhttp.open("GET", "update_user_info.php", true);
+                updateXhttp.send();
             }
         }
 
         followXhttp.open("POST", "follow.php", true);
         followXhttp.send(formData);
-        
-        var updateXhttp = new XMLHttpRequest();
-        updateXhttp.onreadystatechange = function() { // Update users followed
-            if (this.readyState == 4 && this.status == 200) {
-                fetch("user_info.json")
-                .then(res => res.json())
-                .then(data => {
-                    let usersFollowed = [];
-
-                    data.forEach(user => {
-                        usersFollowed.push(user.followee);
-                    });
-
-                    window.usersFollowed = data.map(u => u.followee);
-                });
-            }
-        }
-
-        updateXhttp.open("GET", "update_user_info.php", true);
-        updateXhttp.send();
     });
 });
 
@@ -136,11 +133,11 @@ function renderUsers(users) {
         const username = document.createElement("a"); // Create an href a element
         username.classList.add("username"); // With class "username"
         username.id = user.userId;
-        username.href = `user.php?user=${user.userId}`; // URL
-        username.target = "_blank"; // New page
+        username.href = `user.php?user=${user.userId}`; // with URL
+        username.target = "_blank"; // Open new page
         username.textContent = user.username;
 
-        userDiv.appendChild(username); // Append user info
+        userDiv.appendChild(username); // Append username
 
         const followeeInput = document.createElement("input"); // Followee ID (ID of the user being followed)
         followeeInput.classList.add("followeeInput");
@@ -176,9 +173,9 @@ function renderUsers(users) {
         unfollowButton.type = "submit";
         unfollowButton.textContent = "Unfollow";
 
-        const usersFollowed = window.usersFollowed;
+        const usersFollowed = window.usersFollowed; // Users followed by session user
 
-        if (usersFollowed.includes(user.userId)) { // If the user is being followed
+        if (usersFollowed.includes(user.userId)) { // For followed users
             const unfollowForm = document.createElement("form");
             unfollowForm.classList.add("unfollowForm");
             unfollowForm.action = "follow.php";
@@ -190,7 +187,7 @@ function renderUsers(users) {
             unfollowForm.appendChild(unfollowButton);
 
             userDiv.appendChild(unfollowForm);
-        } else {
+        } else { // For unfollowed users
             const followForm = document.createElement("form");
             followForm.classList.add("followForm");
             followForm.action = "follow.php";
