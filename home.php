@@ -16,6 +16,7 @@ if (isset($_SESSION['user'])) {
 
 getAllUsers();
 getPosts();
+getComments();
 
 ?>
 
@@ -117,8 +118,18 @@ getPosts();
                 </select>
                     <div id="previewContainer"></div><br>
                 <textarea name="text_content" rows="10" cols="100%" maxlength="250"></textarea>
+                <input type="hidden" name="location" value="home_page">
                 <button type="submit" name="create_post">Create Post</button>
             </form>
+        </div>
+    </div>
+
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Comments</h2>
+            <div id="comments"></div>
+            <div id="postComments"></div>
         </div>
     </div>
 </body>

@@ -44,11 +44,8 @@ function getAllUsers() {
     $rs = $conn->query($sql);
 
     if ($rs->num_rows === 0) {
-        
         $output = json_encode(null);
-
     } else {
-
         while ($row = $rs->fetch_assoc()) {
             $users[] = $row;
         }
@@ -71,11 +68,8 @@ function getUserDetails($user) {
     $rs = $conn->query($sql);
 
     if ($rs->num_rows === 0) {
-        
         $output = json_encode(null);
-
     } else {
-
         while ($row = $rs->fetch_assoc()) {
             $user_info[] = $row;
         }
@@ -99,11 +93,8 @@ function getPosts() {
     $rs = $conn->query($sql);
 
     if ($rs->num_rows === 0) {
-        
         $output = json_encode(null);
-
     } else {
-
         while ($row = $rs->fetch_assoc()) {
             $posts[] = $row;
         }
@@ -112,6 +103,29 @@ function getPosts() {
     }
 
     file_put_contents('posts.json', $output);
+}
+
+function getComments() {
+    $conn = connect();
+
+    $sql =
+        "SELECT tbcomments.*, tblogininfo.username
+        FROM tbcomments
+        LEFT JOIN tblogininfo
+        ON tbcomments.userId=tblogininfo.userId";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        $output = json_encode(null);
+    } else {
+        while ($row = $rs->fetch_assoc()) {
+            $comments[] = $row;
+        }
+
+        $output = json_encode($comments, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('comments.json', $output);
 }
 
 function postingError($error_msg) {
@@ -198,6 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
 
     $user_id = $_POST['user_id'];
     $post_category = $_POST['category'];
+    $post_location = $_POST['location'];
 
     $upload_directory = 'uploads/';
     $allowed_extensions = array('jpg','jpeg','png');
@@ -271,25 +286,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
                     $upload_images->bind_param('sss',$post_id['postId'],$destination,$user_id);
                     
                     if ($upload_images->execute()) {
-                        header('Location: home.php');
+                        if ($post_location == 'home_page') {
+                            header('Location: home.php');
+                        } else if ($post_location == 'profile_page') {
+                            header('Location: profile.php');
+                        }
                     } else {
                         postingError('Error uploading files.');
                     }
-
                 } else {
                     postingError('Error uploading files.');
                 }
-                
             }
-
         } else {
             postingError('Error uploading files.');
         }
-
     } else {
         postingError('Error uploading files');
     }
-
 }
 
 ?>

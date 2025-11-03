@@ -87,8 +87,6 @@ fetch("users.json")
                         unfollowButton.classList.replace("unfollow", "follow");
                         unfollowButton.textContent = "Follow";
                     }
-
-                    console.log("Form updated!");
                 }
 
                 var updateXhttp = new XMLHttpRequest();
@@ -107,12 +105,10 @@ fetch("users.json")
                         });
                     }
                 }
-
                 updateXhttp.open("GET", "update_user_info.php", true);
                 updateXhttp.send();
             }
         }
-
         followXhttp.open("POST", "follow.php", true);
         followXhttp.send(formData);
     });

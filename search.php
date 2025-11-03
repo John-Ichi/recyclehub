@@ -15,7 +15,6 @@ if (isset($_SESSION['user'])) {
 }
 
 getAllUsers();
-getPosts();
 
 ?>
 
