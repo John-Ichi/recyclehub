@@ -2,9 +2,16 @@
 
 include 'functions.php';
 
-session_unset();
+function userLogout() {
+    unset($_SESSION['user']);
+    unset($_SESSION['username']);
+    unset($_SESSION['useremail']);
+    return true;
+}
 
-if (session_unset()) {
+userLogout();
+
+if (userLogout()) {
     echo 'true';
 }
 

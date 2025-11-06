@@ -128,6 +128,27 @@ function getComments() {
     file_put_contents('comments.json', $output);
 }
 
+function getPostsDeletionLog() {
+    $conn = connect();
+
+    $sql =
+        "SELECT *
+        FROM tbpostsdeletionlog";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        $output = json_encode(null);
+    } else {
+        while ($row = $rs->fetch_assoc()) {
+            $logs[] = $row;
+        }
+
+        $output = json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('logs.json', $output);
+}
+
 function postingError($error_msg) {
     setcookie('post_error', $error_msg); // Use this cookie to return an error message when redirected
     header('Location: home.php');
@@ -303,6 +324,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
         }
     } else {
         postingError('Error uploading files');
+    }
+}
+
+function adminError($error_msg) {
+    setcookie('admin_error',$error_msg);
+    header('Location: admin.php');
+    exit;
+}
+
+function checkDuplicateAdmin($admin_name) {
+    $conn = connect();
+
+    $sql =
+        "SELECT adminName
+        FROM tbadmininfo
+        WHERE adminName='$admin_name'";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        $response = 'false';
+        return $response;
+    } else {
+        $response = 'true';
+        return $response;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_login'])) { // Admin login
+    $admin = $_POST['admin'];
+    $password = $_POST['password'];
+
+    if (checkDuplicateAdmin($admin) === 'false') {
+        $error_msg = "Admin does not exist!";
+        adminError($error_msg);
+        exit;
+    }
+
+    $sql =
+        "SELECT password
+        FROM tbadmininfo
+        WHERE adminName='$admin'";
+    $rs = $conn->query($sql);
+    $hashed_password = $rs->fetch_assoc();
+
+    if (password_verify($password,$hashed_password['password'])) {
+        $_SESSION['admin'] = $admin;
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        $error_msg = 'Wrong password!';
+        adminError($error_msg);
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_register'])) { // Admin registration
+    $admin_name = $_POST['admin_username'];
+    $password = $_POST['admin_password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    if ($password !== $confirm_password) { // Check password
+        $error_msg = 'Password does not match!';
+        adminError($error_msg);
+        exit;
+    }
+
+    if (checkDuplicateAdmin($admin_name) === 'true') {
+        $error_msg = 'Admin already exists!';
+        adminError($error_msg);
+        exit;
+    }
+
+    $hashed_password = password_hash($password,PASSWORD_DEFAULT);
+
+    $sql =
+        "INSERT INTO tbadmininfo
+        (`adminName`,`password`)
+        VALUES
+        (?,?)";
+    $register = $conn->prepare($sql);
+    $register->bind_param('ss',$admin_name,$hashed_password);        
+
+    if ($register->execute()) {
+        header('Location: admin.php');
+        exit;
+    } else {
+        $error_msg = 'Registraion unsuccesful.';
+        adminError($error_msg);
+        exit;
     }
 }
 

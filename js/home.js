@@ -12,11 +12,26 @@ closeCommentModalBtn.addEventListener("click", () => {
     postCommentsDiv.innerHTML = "";
 });
 
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        if (commentModal.style.display === "block") {
+            commentModal.style.display = "none";
+            commentsDiv.innerHTML = "";
+            postCommentsDiv.innerHTML = "";
+        }
+    }
+});
+
 let filterArray = [];
 
 fetch("posts.json")
 .then(res => res.json())
 .then(data => {
+    if (data === null) {
+        postsDiv.innerHTML = "No post(s) to see.";
+        return;
+    }
+
     filterSelection.forEach(btn => { // Filter
         btn.addEventListener("change", () => { // Check each checkbox
             if (btn.checked) { // Push the value of checked boxes in the filterArray
@@ -31,7 +46,13 @@ fetch("posts.json")
                 return;
             }
             const filteredPosts = data.filter(post => filterArray.includes(post.category));
-            renderPosts(filteredPosts);
+            
+            if (filteredPosts.length === 0) {
+                postsDiv.innerHTML = "No post(s) to see.";
+                return;
+            } else {
+                renderPosts(filteredPosts);
+            }
         });
         renderPosts(data);
     });
@@ -72,7 +93,7 @@ function renderPosts(posts) {
             }
         });
         
-        if (caption.textContent != "") {
+        if (caption.textContent != "") { // Caption is not blank
             innerPostDiv.appendChild(caption);
         }
 
@@ -152,6 +173,11 @@ function renderComments() {
     fetch("comments.json?nocache=" + new Date().getTime()) // Get all comments
     .then(res => res.json())
     .then(data => {
+        if (data === null) {
+            commentsDiv.innerHTML = "No comment(s) yet.";
+            return;
+        }
+
         const postComments = data.filter(comment => comment.postId == postId); // Filter comments by post ID
 
         commentsDiv.innerHTML = "";
@@ -173,35 +199,3 @@ function renderComments() {
         });
     });
 }
-
-/**
- * Manual Implementation
-let postIds = [] // Array for storing post IDs
-
-posts.forEach(post => { // Push post ID to postIds[]
-    postIds.push(post.postId);
-});
-
-const uniquePosts = [...new Set(postIds)]; Create a set with unique IDS only (clear duplicates)
-
-uniquePosts.forEach(ID => { // For each ID
-    
-    const innerPostDiv = document.createElement("div"); // Create a container
-    const caption = document.createElement("p"); // Create a paragraph element for captions
-
-    posts.forEach(post => { // Loop through all posts
-        if (ID === post.postId) { // Check the for ID match
-            caption.innerHTML = post.content; // Assign caption
-            const image = document.createElement("img");
-            image.setAttribute("src", post.image); // Add all images with corresponding ID to container
-            innerPostDiv.appendChild(image);
-        }
-    });
-
-    if (caption.innerHTML != "") { // Append caption if not empty
-        innerPostDiv.appendChild(caption);
-    }
-
-    postsDiv.appendChild(innerPostDiv);
-});
-*/

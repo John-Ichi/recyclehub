@@ -34,13 +34,19 @@ getAllUsers();
 </head>
 <body>
     <h1>Users</h1>
+
     <div class="userInfo" style="display: none;">
         <h2 id="username"></h2>
         <input type="text" id="userId">
         <p id="userEmail"></p>
     </div>
+    
     <input type="text" id="searchBar" name="searchUser" placeholder="Search users..." autocomplete="off">
-    <a href="home.php">Home</a>
+    
+    <button id="returnToHome">Home</button>
+    
+    <button id="goToProfile">Profile</button>
+    
     <button id="logOut">Log Out</button>
     <div class="users"></div>
 </body>
@@ -50,5 +56,15 @@ getAllUsers();
 <script src="js/search.js" defer></script>
 
 <script src="js/logout.js" defer></script>
+
+<script>
+    document.getElementById("returnToHome").addEventListener("click", () => {
+        window.location.href = "home.php";
+    })
+
+    document.getElementById("goToProfile").addEventListener("click", () => {
+        window.location.href = "profile.php";
+    })
+</script>
 
 </html>

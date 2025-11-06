@@ -16,6 +16,9 @@ if (isset($_SESSION['user']) || isset($_SESSION['username']) || isset($_SESSION[
     <title>RecycleHub</title>
 </head>
 <body>
+
+    <button id="adminBtn">Admin</button>
+
     <h1>Log In</h1>
     <p id="errorMsg">
         <?php
@@ -37,6 +40,11 @@ if (isset($_SESSION['user']) || isset($_SESSION['username']) || isset($_SESSION[
 <script>
     window.addEventListener("load", () => {
         document.cookie = "login_error=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    });
+
+    const adminBtn = document.getElementById("adminBtn");
+    adminBtn.addEventListener("click", () => {
+        window.location.href = "admin.php";
     });
 </script>
 

@@ -17,6 +17,11 @@ let filterArray = [];
 fetch("posts.json")
 .then(res => res.json())
 .then(data => {
+    if (data === null) {
+        postsDiv.innerHTML = "No post(s) yet.";
+        return;
+    }
+
     let userId;
 
     if (document.getElementById("searchUserId") === null) {
@@ -180,7 +185,7 @@ function renderComments() {
             commentContainer.appendChild(commenter);
             commentContainer.appendChild(commentContent);
 
-            commentsDiv.appendChild(commentContainer)
+            commentsDiv.appendChild(commentContainer);
         });
     });
 }

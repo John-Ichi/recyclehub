@@ -18,6 +18,8 @@ getAllUsers();
 getPosts();
 getComments();
 
+getPostsDeletionLog();
+
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +80,7 @@ getComments();
     <input type="text" id="searchBar" name="searchUser" placeholder="Search users..." autocomplete="off">
     <button id="searchButton">Search</button>
     
-    <a href="profile.php">Profile</a>
+    <button id="goToProfile">Profile</button>
     
     <button id="createPost">Create Post</button>
     <button id="logOut">Log Out</button>
@@ -132,9 +134,16 @@ getComments();
             <div id="postComments"></div>
         </div>
     </div>
+
+    <div id="postDeletionNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="noticeDiv"></div>
+        </div>
+    </div>
 </body>
 
-<script>
+<script> // Reload script
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
     }
@@ -150,11 +159,7 @@ getComments();
 
 <script src="js/home.js" defer></script>
 
-<script src="js/verify_post.js" defer></script>
-
-<script src="js/logout.js" defer></script>
-
-<script> // Search script
+<script defer> // Search script
     const searchBar = document.getElementById("searchBar");
     searchBar.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
@@ -181,5 +186,17 @@ getComments();
         }
     });
 </script>
+
+<script>
+    document.getElementById("goToProfile").addEventListener("click", () => {
+        window.location.href = "profile.php"; 
+    });
+</script>
+
+<script src="js/verify_post.js" defer></script>
+
+<script src="js/post_deletion_warning_log.js" defer></script>
+
+<script src="js/logout.js" defer></script>
 
 </html>

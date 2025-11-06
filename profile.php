@@ -67,11 +67,18 @@ getComments();
     </style>
 </head>
 <body>
+    <button id="returnToHome">Home</button>
+    
+    <button id="goToSearch">Search</button>
+
+    <button id="logOut">Log out</button>
+
     <h1>User Info</h1>
-    <a href="home.php">Home</a>
+
     <h2 id="username"></h2>
     <input type="text" id="userId" style="display: none;">
     <p id="userEmail" style="display: none;"></p>
+    
     <h3>Posts</h3>
 
     <button id="createPost">Post</button>
@@ -132,5 +139,17 @@ getComments();
 <script src="js/display_user_posts.js" defer></script>
 
 <script src="js/verify_post.js" defer></script>
+
+<script>
+    document.getElementById("returnToHome").addEventListener("click", () => {
+        window.location.href = "home.php";
+    });
+
+    document.getElementById("goToSearch").addEventListener("click", () => {
+        window.location.href = "search.php";
+    });
+</script>
+
+<script src="js/logout.js" defer></script>
 
 </html>

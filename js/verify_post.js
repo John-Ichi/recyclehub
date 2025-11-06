@@ -3,16 +3,18 @@ const postBtn = document.getElementById("createPost");
 const postForm = document.getElementById("postForm");
 const imageUpload = document.getElementById("imageUpload");
 const previewContainer = document.getElementById("previewContainer");
-const closeBtn = document.getElementsByClassName("close")[0];
+const closePostModalBtn = postModal.querySelector(".close");
 
 postBtn.addEventListener("click", () => {
     postModal.style.display = "block";
 });
 
-closeBtn.addEventListener("click", () => { // Close post modal [note: add a confirmation for discarding post]
-    postForm.reset();
-    previewContainer.innerHTML = "";
-    postModal.style.display = "none";
+closePostModalBtn.addEventListener("click", () => { // Close post modal [note: add a confirmation for discarding post]
+    if (confirm("Are you sure you want to terminate posting?")) {
+        postForm.reset();
+        previewContainer.innerHTML = "";
+        postModal.style.display = "none";
+    }
 });
 
 // Image preview for selected images

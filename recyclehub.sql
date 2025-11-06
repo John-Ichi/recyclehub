@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2025 at 10:26 AM
+-- Generation Time: Nov 06, 2025 at 04:45 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,26 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbadmininfo`
+--
+
+CREATE TABLE `tbadmininfo` (
+  `adminId` int(11) NOT NULL,
+  `adminName` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbadmininfo`
+--
+
+INSERT INTO `tbadmininfo` (`adminId`, `adminName`, `password`, `datetimeCreated`) VALUES
+(2, 'admin1', '$2y$10$0UPLRvGhffVRo7G4LjOEyeq84Ta/L8NtMLkVcoSWGvt04miyBMJnW', '2025-11-04 10:45:08');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbcomments`
 --
 
@@ -34,20 +54,6 @@ CREATE TABLE `tbcomments` (
   `userId` int(11) NOT NULL,
   `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbcomments`
---
-
-INSERT INTO `tbcomments` (`commentId`, `postId`, `commentContent`, `userId`, `datetimeCreated`) VALUES
-(25, 28, 'New test comment!', 23, '2025-11-03 16:25:19'),
-(26, 24, 'Test comment for user', 23, '2025-11-03 16:39:12'),
-(27, 25, 'One more test comment', 23, '2025-11-03 16:39:22'),
-(28, 36, 'Test comment', 21, '2025-11-03 17:16:09'),
-(29, 23, 'Test comment 2', 21, '2025-11-03 17:16:20'),
-(30, 30, 'Comment for profile.php', 25, '2025-11-03 17:17:51'),
-(31, 31, 'Test again', 25, '2025-11-03 17:17:57'),
-(32, 23, 'Test comment for user.php', 25, '2025-11-03 17:19:58');
 
 -- --------------------------------------------------------
 
@@ -61,13 +67,6 @@ CREATE TABLE `tbfollows` (
   `follower` int(11) NOT NULL,
   `timeCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbfollows`
---
-
-INSERT INTO `tbfollows` (`id`, `followee`, `follower`, `timeCreated`) VALUES
-(93, 21, 23, '2025-11-03 16:39:49');
 
 -- --------------------------------------------------------
 
@@ -87,19 +86,7 @@ CREATE TABLE `tbimages` (
 --
 
 INSERT INTO `tbimages` (`imageId`, `postId`, `image`, `userId`) VALUES
-(13, 23, 'uploads/img_68ece410a68312.56239217.jpg', 20),
-(14, 24, 'uploads/img_68ee14aeb70016.40697872.jpg', 21),
-(15, 24, 'uploads/img_68ee14aeb77d91.46524555.jpg', 21),
-(16, 25, 'uploads/img_68ee2919347387.63444999.jpg', 21),
-(17, 28, 'uploads/img_68f055bf4555b1.15851251.jpg', 23),
-(18, 29, 'uploads/img_68f05692a880e3.09214337.jpg', 23),
-(19, 30, 'uploads/img_6902cab9ce4d22.50460770.jpg', 25),
-(20, 31, 'uploads/img_6902cc7dbf3127.34653621.jpg', 25),
-(21, 32, 'uploads/img_6902d3bc85c851.81180938.jpg', 25),
-(22, 35, 'uploads/img_690868d8c0d415.43254190.jpg', 23),
-(23, 36, 'uploads/img_6908696a8ff889.90133834.jpg', 23),
-(24, 37, 'uploads/img_6908731d993673.50659109.jpg', 21),
-(25, 38, 'uploads/img_6908737b372dc0.39022388.jpg', 25);
+(34, 47, 'uploads/img_690c192446dea5.34448765.jpg', 25);
 
 -- --------------------------------------------------------
 
@@ -142,22 +129,44 @@ CREATE TABLE `tbposts` (
 --
 
 INSERT INTO `tbposts` (`postId`, `content`, `userId`, `category`) VALUES
-(23, 'POGI', 20, 'Other(s)'),
-(24, 'GANDA', 21, 'Other(s)'),
-(25, 'WOOD', 21, 'Wood'),
-(28, 'Nostalgia', 23, 'Plastic'),
-(29, 'Nature', 23, 'Wood'),
-(30, 'SKY', 25, 'Wood'),
-(31, 'TEST', 25, 'Other(s)'),
-(32, 'MAI', 25, 'Other(s)'),
-(35, 'Love', 23, 'Paper'),
-(36, 'Poleng', 23, 'Wood'),
-(37, 'CAR', 21, 'Scrap Metal'),
-(38, 'Glass door Poleng', 25, 'Glass');
+(47, 'Test refresh', 25, 'Plastic');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbpostsdeletionlog`
+--
+
+CREATE TABLE `tbpostsdeletionlog` (
+  `logId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `postId` int(11) NOT NULL,
+  `content` varchar(250) NOT NULL,
+  `purposeOfDeletion` enum('Inappropriate_image(s)','Inappropriate_caption','Inappropriate_comment(s)') NOT NULL,
+  `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp(),
+  `confirmed` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbpostsdeletionlog`
+--
+
+INSERT INTO `tbpostsdeletionlog` (`logId`, `userId`, `postId`, `content`, `purposeOfDeletion`, `datetimeCreated`, `confirmed`) VALUES
+(6, 25, 42, 'For deletion', 'Inappropriate_image(s)', '2025-11-06 05:35:28', 1),
+(7, 25, 43, 'Test deletion 2', 'Inappropriate_image(s)', '2025-11-06 05:42:27', 1),
+(8, 25, 44, 'TEST', 'Inappropriate_caption', '2025-11-06 06:34:33', 1),
+(9, 25, 45, 'Test again', 'Inappropriate_image(s)', '2025-11-06 06:35:33', 1),
+(10, 25, 46, 'Comment', 'Inappropriate_comment(s)', '2025-11-06 06:36:06', 1);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `tbadmininfo`
+--
+ALTER TABLE `tbadmininfo`
+  ADD PRIMARY KEY (`adminId`);
 
 --
 -- Indexes for table `tbcomments`
@@ -198,26 +207,40 @@ ALTER TABLE `tbposts`
   ADD KEY `userId` (`userId`);
 
 --
+-- Indexes for table `tbpostsdeletionlog`
+--
+ALTER TABLE `tbpostsdeletionlog`
+  ADD PRIMARY KEY (`logId`),
+  ADD KEY `userId` (`userId`),
+  ADD KEY `postId` (`postId`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `tbadmininfo`
+--
+ALTER TABLE `tbadmininfo`
+  MODIFY `adminId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tbcomments`
 --
 ALTER TABLE `tbcomments`
-  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `tbfollows`
 --
 ALTER TABLE `tbfollows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `tbimages`
 --
 ALTER TABLE `tbimages`
-  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `tblogininfo`
@@ -229,7 +252,13 @@ ALTER TABLE `tblogininfo`
 -- AUTO_INCREMENT for table `tbposts`
 --
 ALTER TABLE `tbposts`
-  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+--
+-- AUTO_INCREMENT for table `tbpostsdeletionlog`
+--
+ALTER TABLE `tbpostsdeletionlog`
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -261,6 +290,12 @@ ALTER TABLE `tbimages`
 --
 ALTER TABLE `tbposts`
   ADD CONSTRAINT `tbposts_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
+
+--
+-- Constraints for table `tbpostsdeletionlog`
+--
+ALTER TABLE `tbpostsdeletionlog`
+  ADD CONSTRAINT `tbpostsdeletionlog_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

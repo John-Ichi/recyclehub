@@ -2,8 +2,8 @@
 
 include 'functions.php';
 
-if (!isset($_SESSION['user']) && !isset($_SESSION['username']) && !isset($_SESSION['useremail'])) {
-    header('Location: index.php');
+if (!isset($_SESSION['admin'])) {
+    header('Location: admin.php');
 }
 
 getAllUsers();
@@ -60,25 +60,28 @@ getComments();
     </style>
 </head>
 <body>
-    <button id="returnToHome">Home</button>
-    <button id="goToSearch">Search</button>
-    <button id="goToProfile">Profile</button>
-    <button id="logOut">Log out</button>
+    <p id="confirmationMessage">
+        <?php
+        
+        if (isset($_COOKIE['delete_successful'])) {
+            echo $_COOKIE['delete_successful'];
+        }
 
-    <div class="currentSessionInfo" style="display: none;">
+        ?>
+    </p>
+
+    <button id="returnToDashboard">Return</button>
+    
+    <button id="warningBtn">Warn User</button>
+
+    <button id="banBtn">Ban User</button>
+
+    <div class="userInfo">
         <h2 id="username"></h2>
         <input type="text" id="userId">
         <p id="userEmail"></p>
     </div>
 
-    <div class="searchUserInfo">
-        <h2 id="searchUsername"></h2>
-        <input type="text" id="searchUserId" style="display: none;">
-        <p id="searchUserEmail" style="display: none;"></p>
-    </div>
-
-    <div class="searchUserFollowActions"></div>
-    
     <div class="filterSelect">
         <input type="checkbox" id="plastic" name="plastic" class="filterPosts" value="Plastic">
         <label for="plastic">Plastic</label>
@@ -101,32 +104,42 @@ getComments();
             <span class="close">&times;</span>
             <h2>Comments</h2>
             <div id="comments"></div>
-            <div id="postComments"></div>
+        </div>
+    </div>
+
+    <div id="deletePostModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Delete post?</h2>
+            <p>Are you sure you want to delete this post?</p>
+            <form action="actions.php" method="POST">
+                <input type="text" name="user_id" id="userId">
+                <input type="text" name="post_id" id="postId">
+                <select name="deletion_purpose" required>
+                    <option value="" selected disabled hidden>Reason for deletion</option>
+                    <option value="Inappropriate_image(s)">Inappropriate pictures</option>
+                    <option value="Inappropriate_caption">Inappropriate captions</option>
+                    <option value="Inappropriate_comment(s)">Inappropriate comments</option>
+                </select>
+                <button type="submit" name="delete_post">Yes</button>
+            </form>
         </div>
     </div>
 
 </body>
 
-<script src="js/get_user_info.js" defer></script>
-
-<script src="js/get_search_user_info.js" defer></script>
-
-<script src="js/display_user_posts.js" defer></script>
-
 <script>
-    document.getElementById("returnToHome").addEventListener("click", () => {
-        window.location.href = "home.php";
-    });
-
-    document.getElementById("goToSearch").addEventListener("click", () => {
-        window.location.href = "search.php";
-    });
-
-    document.getElementById("goToProfile").addEventListener("click", () => {
-        window.location.href = "profile.php";
+    window.addEventListener("load", () => {
+        document.cookie = "delete_successful=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     });
 </script>
 
-<script src="js/logout.js" defer></script>
+<script>
+    document.getElementById("returnToDashboard").addEventListener("click", () => {
+        window.location.href = "dashboard.php";
+    });
+</script>
+
+<script src="js/user_actions.js" defer></script>
 
 </html>
