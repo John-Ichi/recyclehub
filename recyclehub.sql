@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2025 at 04:45 AM
+-- Generation Time: Nov 07, 2025 at 02:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,6 +44,28 @@ INSERT INTO `tbadmininfo` (`adminId`, `adminName`, `password`, `datetimeCreated`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbbanlogs`
+--
+
+CREATE TABLE `tbbanlogs` (
+  `logId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `reason` varchar(250) NOT NULL,
+  `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp(),
+  `unban` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbbanlogs`
+--
+
+INSERT INTO `tbbanlogs` (`logId`, `userId`, `reason`, `datetimeCreated`, `unban`) VALUES
+(2, 25, 'You are banned!', '2025-11-06 22:01:05', 1),
+(3, 25, 'u are banned', '2025-11-07 09:12:51', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbcomments`
 --
 
@@ -54,6 +76,15 @@ CREATE TABLE `tbcomments` (
   `userId` int(11) NOT NULL,
   `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbcomments`
+--
+
+INSERT INTO `tbcomments` (`commentId`, `postId`, `commentContent`, `userId`, `datetimeCreated`) VALUES
+(44, 48, 'Test', 25, '2025-11-06 13:00:05'),
+(45, 48, 'Test 2', 25, '2025-11-06 13:00:07'),
+(46, 48, 'Profile comment test', 25, '2025-11-06 13:00:15');
 
 -- --------------------------------------------------------
 
@@ -86,7 +117,7 @@ CREATE TABLE `tbimages` (
 --
 
 INSERT INTO `tbimages` (`imageId`, `postId`, `image`, `userId`) VALUES
-(34, 47, 'uploads/img_690c192446dea5.34448765.jpg', 25);
+(35, 48, 'uploads/img_690c2b511b4765.36387512.jpg', 25);
 
 -- --------------------------------------------------------
 
@@ -129,7 +160,7 @@ CREATE TABLE `tbposts` (
 --
 
 INSERT INTO `tbposts` (`postId`, `content`, `userId`, `category`) VALUES
-(47, 'Test refresh', 25, 'Plastic');
+(48, 'POGI', 25, 'Plastic');
 
 -- --------------------------------------------------------
 
@@ -156,7 +187,31 @@ INSERT INTO `tbpostsdeletionlog` (`logId`, `userId`, `postId`, `content`, `purpo
 (7, 25, 43, 'Test deletion 2', 'Inappropriate_image(s)', '2025-11-06 05:42:27', 1),
 (8, 25, 44, 'TEST', 'Inappropriate_caption', '2025-11-06 06:34:33', 1),
 (9, 25, 45, 'Test again', 'Inappropriate_image(s)', '2025-11-06 06:35:33', 1),
-(10, 25, 46, 'Comment', 'Inappropriate_comment(s)', '2025-11-06 06:36:06', 1);
+(10, 25, 46, 'Comment', 'Inappropriate_comment(s)', '2025-11-06 06:36:06', 1),
+(11, 25, 47, 'Test refresh', 'Inappropriate_caption', '2025-11-06 12:55:24', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbwarninglogs`
+--
+
+CREATE TABLE `tbwarninglogs` (
+  `logId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `warningMessage` varchar(250) NOT NULL,
+  `datetimeCreated` datetime NOT NULL DEFAULT current_timestamp(),
+  `confirmed` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbwarninglogs`
+--
+
+INSERT INTO `tbwarninglogs` (`logId`, `userId`, `warningMessage`, `datetimeCreated`, `confirmed`) VALUES
+(1, 25, 'You have too many inappropriate posts, your account is in risk of termination\r\n', '2025-11-06 12:47:01', 1),
+(2, 20, 'Test multiple warning', '2025-11-06 13:15:01', 0),
+(3, 21, 'tes t2', '2025-11-06 13:16:48', 0);
 
 --
 -- Indexes for dumped tables
@@ -166,7 +221,14 @@ INSERT INTO `tbpostsdeletionlog` (`logId`, `userId`, `postId`, `content`, `purpo
 -- Indexes for table `tbadmininfo`
 --
 ALTER TABLE `tbadmininfo`
-  ADD PRIMARY KEY (`adminId`);
+  ADD PRIMARY KEY (`adminId`),
+  ADD UNIQUE KEY `adminName` (`adminName`);
+
+--
+-- Indexes for table `tbbanlogs`
+--
+ALTER TABLE `tbbanlogs`
+  ADD PRIMARY KEY (`logId`);
 
 --
 -- Indexes for table `tbcomments`
@@ -215,6 +277,13 @@ ALTER TABLE `tbpostsdeletionlog`
   ADD KEY `postId` (`postId`);
 
 --
+-- Indexes for table `tbwarninglogs`
+--
+ALTER TABLE `tbwarninglogs`
+  ADD PRIMARY KEY (`logId`),
+  ADD KEY `userId` (`userId`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -225,22 +294,28 @@ ALTER TABLE `tbadmininfo`
   MODIFY `adminId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `tbbanlogs`
+--
+ALTER TABLE `tbbanlogs`
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `tbcomments`
 --
 ALTER TABLE `tbcomments`
-  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `tbfollows`
 --
 ALTER TABLE `tbfollows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `tbimages`
 --
 ALTER TABLE `tbimages`
-  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `tblogininfo`
@@ -252,13 +327,19 @@ ALTER TABLE `tblogininfo`
 -- AUTO_INCREMENT for table `tbposts`
 --
 ALTER TABLE `tbposts`
-  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `tbpostsdeletionlog`
 --
 ALTER TABLE `tbpostsdeletionlog`
-  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `tbwarninglogs`
+--
+ALTER TABLE `tbwarninglogs`
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -296,6 +377,12 @@ ALTER TABLE `tbposts`
 --
 ALTER TABLE `tbpostsdeletionlog`
   ADD CONSTRAINT `tbpostsdeletionlog_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
+
+--
+-- Constraints for table `tbwarninglogs`
+--
+ALTER TABLE `tbwarninglogs`
+  ADD CONSTRAINT `tbwarninglogs_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `tblogininfo` (`userId`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -60,7 +60,7 @@ fetch("users.json")
                     }
                 }
 
-                updateXhttp.open("GET", "update_user_info.php", true);
+                updateXhttp.open("GET", "search.php", true);
                 updateXhttp.send();
             }
         }

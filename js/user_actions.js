@@ -24,6 +24,34 @@ closeDeletePostModalBtn.addEventListener("click", () => {
     deletePostForm.reset();
 });
 
+const warningBtn = document.getElementById("warningBtn");
+const warningModal = document.getElementById("warningModal");
+const closeWarningModalBtn = warningModal.querySelector(".close");
+const warningForm = warningModal.querySelector("form");
+
+warningBtn.addEventListener("click", () => {
+    warningModal.style.display = "block";
+})
+
+closeWarningModalBtn.addEventListener("click", () => {
+    warningModal.style.display = "none";
+    warningForm.reset();
+});
+
+const banBtn = document.getElementById("banBtn");
+const banUserModal = document.getElementById("banUserModal");
+const closeBanModal = banUserModal.querySelector(".close");
+const banForm = banUserModal.querySelector("form");
+
+banBtn.addEventListener("click", () => {
+    banUserModal.style.display = "block";
+});
+
+closeBanModal.addEventListener("click", () => {
+    banUserModal.style.display = "none";
+    banForm.reset();
+});
+
 window.addEventListener("keydown", (e) => { // Extra
     if (e.key === "Escape") {
         if (commentModal.style.display === "block") {
@@ -33,6 +61,14 @@ window.addEventListener("keydown", (e) => { // Extra
         if (deletePostModal.style.display === "block") {
             deletePostModal.style.display = "none";
             deletePostForm.reset();
+        }
+        if (warningModal.style.display === "block") {
+            warningModal.style.display = "none";
+            warningForm.reset();
+        }
+        if (banUserModal.style.display === "block") {
+            banUserModal.style.display = "none";
+            banForm.reset();
         }
     }
 });
@@ -79,18 +115,133 @@ fetch("posts.json")
         });
         renderPosts(filteredPostsByUserId);
     });
-
-    deletePostForm.addEventListener("submit", (e) => {
-        // e.preventDefault();
-    })
 });
 
 function renderUserData(users) {
+    const userDiv = document.querySelector(".userInfo");
     const userData = users.filter(user => user.userId === urlParamsVal);
+    const userId = userData[0].userId;
 
     document.getElementById("username").innerHTML = userData[0].username;
     document.getElementById("userId").value = userData[0].userId;
     document.getElementById("userEmail").innerHTML = userData[0].userEmail;
+    warningForm.querySelector(".userId").value = userId;
+    banForm.querySelector(".userId").value = userId;
+
+    fetch("deleted_logs.json")
+    .then(res => res.json())
+    .then(data => {
+        const deletedPostLogs = data;
+
+        fetch("warning_logs.json")
+        .then(res => res.json())
+        .then(data => {
+            const warningLogs = data;
+
+            fetch("ban_logs.json")
+            .then(res => res.json())
+            .then(data => {
+                const banLogs = data;
+
+                let numOfDeletedPosts = 0;
+
+                if (deletedPostLogs !== null) {
+                    const filteredDeletedLogs = deletedPostLogs.filter(log => log.userId === userId);
+                    filteredDeletedLogs.forEach(log => {
+                        numOfDeletedPosts += 1;
+                    });
+                }
+
+                let numOfWarnings = 0;
+                let numOfConfirmedWarnings = 0;
+
+                if (warningLogs !== null) {
+                    const filteredWarningLogs = warningLogs.filter(log => log.userId === userId);
+
+                    if (filteredWarningLogs.length !== 0) {
+                        numOfWarnings = filteredWarningLogs.length;
+                    }
+
+                    filteredWarningLogs.forEach(log => {
+                        if (log.confirmed === "1") {
+                            numOfConfirmedWarnings += 1;
+                        }
+                    })
+                }
+
+                let banStatus = "Unbanned";
+                let banHistory = 0;
+
+                if (banLogs !== null) {
+                    const filteredBanLogs = banLogs.filter(log => log.userId === userId);
+                    filteredBanLogs.forEach(log => {
+                        banHistory += 1;
+                        
+                        if (log.unban === "0") {
+                            banStatus = "Banned";
+                        }
+                    });
+                }
+
+                if (banStatus === "Banned") {
+                    banBtn.textContent = "Unban User";
+
+                    const modalHeader = banUserModal.querySelector("h2");
+                    modalHeader.textContent = "Unban User";
+
+                    const modalMessage = banUserModal.querySelector("p");
+                    modalMessage.textContent = "Enter admin username and password to unban user.";
+
+                    const banInput = banForm.querySelector(".banInput");
+                    banInput.name = "unban_user";
+
+                    const adminUserInput = document.createElement("input");
+                    adminUserInput.type = "text";
+                    adminUserInput.name = "admin_username";
+                    adminUserInput.placeholder = "Username";
+                    adminUserInput.required = true;
+
+                    const passwordInput = document.createElement("input");
+                    passwordInput.type = "password"; // Change to password
+                    passwordInput.name = "admin_password";
+                    passwordInput.placeholder = "Password";
+                    passwordInput.required = true;
+
+                    const referenceElement = banForm.querySelector("button");
+
+                    banForm.removeChild(banForm.querySelector("textarea"));
+                    banForm.insertBefore(adminUserInput, referenceElement);
+                    banForm.insertBefore(passwordInput, referenceElement);
+                }
+
+                const numOfDeletedPostsIndicator = document.createElement("p");
+                numOfDeletedPostsIndicator.classList.add("numOfDeletedPosts");
+                numOfDeletedPostsIndicator.innerHTML = `Number of deleted posts: ${numOfDeletedPosts}`;
+
+                const numOfWarningsIndicator = document.createElement("p");
+                numOfWarningsIndicator.classList.add("numOfWarnings");
+                numOfWarningsIndicator.innerHTML = `Number of warnings: ${numOfWarnings}`;
+
+                const numOfConfirmedWarningsIndicator = document.createElement("p");
+                numOfConfirmedWarningsIndicator.classList.add("numOfConfirmedWarnings");
+                numOfConfirmedWarningsIndicator.innerHTML = `Number of confirmed warnings: ${numOfConfirmedWarnings}`;
+                
+                const banStatusIndicator = document.createElement("p");
+                banStatusIndicator.classList.add("banStatus");
+                banStatusIndicator.innerHTML = `Ban status: ${banStatus}`;
+
+                const numOfBans = document.createElement("p");
+                numOfBans.classList.add("numOfBans");
+                numOfBans.innerHTML = `Number of bans received: ${banHistory}`;
+
+                userDiv.appendChild(numOfDeletedPostsIndicator);
+                userDiv.appendChild(numOfWarningsIndicator);
+                userDiv.appendChild(numOfConfirmedWarningsIndicator);
+                userDiv.appendChild(banStatusIndicator);
+                userDiv.appendChild(numOfBans);
+            });
+        });
+    });
 }
 
 function renderPosts(posts) {
@@ -106,9 +257,7 @@ function renderPosts(posts) {
 
     Object.entries(groupedPosts).forEach(([id, group]) => {
         const innerPostDiv = document.createElement("div");
-        
         const postId = group[0].postId;
-        
         innerPostDiv.id = postId;
         innerPostDiv.classList.add("post");
 
@@ -121,8 +270,8 @@ function renderPosts(posts) {
 
         deletePostBtn.addEventListener("click", () => {
             deletePostModal.style.display = "block";
-            deletePostModal.querySelector("#userId").value = group[0].userId;
-            document.getElementById("postId").value = postId;
+            deletePostForm.querySelector(".userId").value = group[0].userId;
+            deletePostForm.querySelector(".postId").value = postId;
         });
 
         innerPostDiv.appendChild(deletePostBtn);

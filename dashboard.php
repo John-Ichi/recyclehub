@@ -8,6 +8,10 @@ if (!isset($_SESSION['admin'])) {
 
 getAllUsers();
 
+getPostsDeletionLog();
+getWarningLogs();
+getBanLogs();
+
 ?>
 
 <!DOCTYPE html>
