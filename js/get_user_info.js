@@ -1,6 +1,8 @@
-fetch("user_info.json")
+fetch("user_info.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
+    if (data === null) return;
+
     document.getElementById("username").innerHTML = data[0].username;
     document.getElementById("userId").value = data[0].userId;
     document.getElementById("userEmail").innerHTML = data[0].userEmail;

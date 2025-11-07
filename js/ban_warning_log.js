@@ -1,7 +1,7 @@
-const postDeletionNoticeModal = document.getElementById("postDeletionNoticeModal");
-const postDeletionNoticeDiv = document.getElementById("noticeDiv");
+const warningNoticeModal = document.getElementById("warningNoticeModal");
+const warningNoticeDiv = document.getElementById("warningNoticeDiv");
 
-fetch("deleted_logs.json")
+fetch("warning_logs.json")
 .then(res => res.json())
 .then(data => {
     if (data === null) {
@@ -9,31 +9,31 @@ fetch("deleted_logs.json")
     }
 
     const userId = document.getElementById("imageUploadUserId").value;
-    const userLogs = data.filter(log => log.userId === userId);
+    const userWarningLogs = data.filter(log => log.userId === userId);
 
-    if (userLogs.length === 0) {
+    if (userWarningLogs.length === 0) {
         return;
     }
 
-    let postSummary = "";
+    let warningSummary = "";
 
-    userLogs.forEach(log => {
+    userWarningLogs.forEach(log => {
         if (log.confirmed === "0") {
-            postSummary += (`Caption: ${log.content}; Reason: ${log.purposeOfDeletion}.<br>`);
+            warningSummary += `Warning: ${log.warningMessage}\n`;
         }
     });
 
-    if (postSummary !== "") {
+    if (warningSummary !== "") {
         const notice = document.createElement("div");
         notice.classList.add("notice");
 
         const message = document.createElement("p");
         message.classList.add("noticeMessage");
-        message.innerHTML = `Your recent post(s) has been deleted:<br>${postSummary}`;
+        message.innerHTML = `Your accounts is in risk of a potential ban!<br>Summary:<br>${warningSummary}`;
 
         const confirmationForm = document.createElement("form");
         confirmationForm.action = "functions.php";
-        confirmationForm.method = "POST";
+        confirmationForm.method = "POST"
 
         const userIdInput = document.createElement("input");
         userIdInput.type = "hidden";
@@ -42,7 +42,7 @@ fetch("deleted_logs.json")
 
         const confirmNotice = document.createElement("input");
         confirmNotice.type = "hidden";
-        confirmNotice.name = "confirm_notice";
+        confirmNotice.name = "confirm_ban_warning";
         confirmNotice.value = "true";
 
         const confirmBtn = document.createElement("button");
@@ -55,9 +55,9 @@ fetch("deleted_logs.json")
 
         notice.appendChild(message);
         notice.appendChild(confirmationForm);
-        postDeletionNoticeDiv.appendChild(notice);
+        warningNoticeDiv.appendChild(notice);
 
-        postDeletionNoticeModal.style.display = "block";
+        warningNoticeModal.style.display = "block";
 
         confirmationForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -67,11 +67,11 @@ fetch("deleted_logs.json")
             var confirmXhttp = new XMLHttpRequest();
             confirmXhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    var reloadXhttp = new XMLHttpRequest();
+                    var reloadXhttp = new XMLHttpRequest()
                     reloadXhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
-                            postDeletionNoticeModal.style.display = "none";
-                            postDeletionNoticeDiv.innerHTML = "";
+                            warningNoticeModal.style.display = "none";
+                            warningNoticeDiv.innerHTML = "";
                         }
                     }
                     reloadXhttp.open("GET", "home.php", true);
@@ -82,4 +82,4 @@ fetch("deleted_logs.json")
             confirmXhttp.send(formData);
         });
     }
-})
+});
