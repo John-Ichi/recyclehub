@@ -106,7 +106,7 @@ function renderPosts(posts) {
 
             const commentForm = document.createElement("form"); // Create form for posting comments
             commentForm.id = "commentForm";
-            commentForm.action = "comment.php";
+            commentForm.action = "functions.php";
             commentForm.method = "POST";
 
             const postIdField = document.createElement("input"); // Input post ID
@@ -147,7 +147,7 @@ function renderPosts(posts) {
                             renderComments();
                         }
                     }
-                    commentXhttp.open("POST", "comment.php", true);
+                    commentXhttp.open("POST", "functions.php", true);
                     commentXhttp.send(formData);
                 }
             });

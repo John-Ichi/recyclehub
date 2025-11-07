@@ -140,17 +140,59 @@ function getPostsDeletionLog() {
         $output = json_encode(null);
     } else {
         while ($row = $rs->fetch_assoc()) {
-            $logs[] = $row;
+            $deleted_logs[] = $row;
         }
 
-        $output = json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $output = json_encode($deleted_logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
-    file_put_contents('logs.json', $output);
+    file_put_contents('deleted_logs.json', $output);
 }
 
-function postingError($error_msg) {
-    setcookie('post_error', $error_msg); // Use this cookie to return an error message when redirected
+function getWarningLogs() {
+    $conn = connect();
+
+    $sql =
+        "SELECT *
+        FROM tbwarninglogs";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        $output = json_encode(null);
+    } else {
+        while ($row = $rs->fetch_assoc()) {
+            $warning_logs[] = $row;
+        }
+
+        $output = json_encode($warning_logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('warning_logs.json', $output);
+}
+
+function getBanLogs() {
+    $conn = connect();
+
+    $sql =
+        "SELECT *
+        FROM tbbanlogs";
+    $rs = $conn->query($sql);
+
+    if ($rs->num_rows === 0) {
+        $output = json_encode(null);
+    } else {
+        while ($row = $rs->fetch_assoc()) {
+            $ban_logs[] = $row;
+        }
+
+        $output = json_encode($ban_logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    file_put_contents('ban_logs.json', $output);
+}
+
+function postingError($error_msg) { // User posting error handler
+    setcookie('post_error', $error_msg);
     header('Location: home.php');
     exit();
 }
@@ -327,10 +369,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_post'])) { // C
     }
 }
 
-function adminError($error_msg) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_notice'])) { // Confirm post deletion notice
+    $user_id = $_POST['user_id'];
+
+    $sql =
+        "UPDATE tbpostsdeletionlog
+        SET confirmed='1'
+        WHERE userId='$user_id'";
+    if ($conn->query($sql)) {
+        exit();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_ban_warning'])) { // Ban warning confirmation
+    $user_id = $_POST['user_id'];
+
+    $sql =
+        "UPDATE tbwarninglogs
+        SET confirmed='1'
+        WHERE userId='$user_id'";
+    if ($conn->query($sql)) {
+        exit();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['post_comment'])) { // Comment handler
+    $post_id = $_POST['post_id'];
+    $comment_content = $_POST['comment'];
+    $commenter = $_POST['commenter'];
+    
+    $conn = connect();
+
+    $sql =
+        "INSERT INTO tbcomments
+        (`postId`,`commentContent`,`userId`)
+        VALUES
+        (?,?,?)";
+    $comment = $conn->prepare($sql);
+    $comment->bind_param('sss',$post_id,$comment_content,$commenter);
+
+    if ($comment->execute()) {
+        getComments();
+        exit();
+    }
+}
+
+getComments(); // Additional call
+
+// Admin functions
+
+function adminError($error_msg) { // Admin error handler
     setcookie('admin_error',$error_msg);
     header('Location: admin.php');
-    exit;
+    exit();
 }
 
 function checkDuplicateAdmin($admin_name) {
@@ -358,7 +449,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_login'])) { // 
     if (checkDuplicateAdmin($admin) === 'false') {
         $error_msg = "Admin does not exist!";
         adminError($error_msg);
-        exit;
+        exit();
     }
 
     $sql =
@@ -371,11 +462,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_login'])) { // 
     if (password_verify($password,$hashed_password['password'])) {
         $_SESSION['admin'] = $admin;
         header('Location: dashboard.php');
-        exit;
+        exit();
     } else {
         $error_msg = 'Wrong password!';
         adminError($error_msg);
-        exit;
+        exit();
     }
 }
 
@@ -387,13 +478,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_register'])) { 
     if ($password !== $confirm_password) { // Check password
         $error_msg = 'Password does not match!';
         adminError($error_msg);
-        exit;
+        exit();
     }
 
     if (checkDuplicateAdmin($admin_name) === 'true') {
         $error_msg = 'Admin already exists!';
         adminError($error_msg);
-        exit;
+        exit();
     }
 
     $hashed_password = password_hash($password,PASSWORD_DEFAULT);
@@ -408,11 +499,206 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_register'])) { 
 
     if ($register->execute()) {
         header('Location: admin.php');
-        exit;
+        exit();
     } else {
         $error_msg = 'Registraion unsuccesful.';
         adminError($error_msg);
-        exit;
+        exit();
+    }
+}
+
+function errorHandler($error_msg) { // Error handler for admin user_actions
+    setcookie('post_deletion_error',$error_msg);
+    header('Location: dashboard.php');
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['warn_user'])) { // User warning POST
+    $user_id = $_POST['user_id'];
+    $warning_message = $_POST['warning_message'];
+
+    $sql =
+        "INSERT INTO tbwarninglogs
+        (`userId`,`warningMessage`)
+        VALUES
+        (?,?)";
+    $warning = $conn->prepare($sql);
+    $warning->bind_param('ss',$user_id,$warning_message);
+
+    if ($warning->execute()) {
+        setcookie('warning_successful', 'Warning posted successfully.');
+        header('Location: user_actions.php?user=' . $user_id);
+        exit();
+    } else {
+        $error_msg = 'Error posting warning.';
+        errorHandler($error_msg);
+        exit();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post'])) { // Admin delete post
+    $user_id = $_POST['user_id'];
+    $post_id = $_POST['post_id'];
+    $purpose_of_removal = $_POST['deletion_purpose'];
+
+    $delete_comments =
+        "DELETE FROM tbcomments
+        WHERE postId='$post_id'";
+
+    if (!$conn->query($delete_comments)) {
+        $error_msg = "Error deleting comments.";
+        errorHandler($error_msg);
+        exit();
+    }
+
+    $select_images =
+        "SELECT *
+        FROM tbimages
+        WHERE postId='$post_id'";
+    $query_select_images = $conn->query($select_images);
+
+    if (!$query_select_images) {
+        $error_msg = "Error fetching images.";
+        errorHandler($error_msg);
+        exit();
+    }
+
+    while ($images = $query_select_images->fetch_assoc()) {
+        $image = $images['image'];
+
+        if (file_exists($image)) {
+            if (unlink($image)) {
+                $delete_images =
+                    "DELETE FROM tbimages
+                    WHERE postId='$post_id'";
+                
+                if (!$conn->query($delete_images)) {
+                    $error_msg = "Error deleting post images.";
+                }
+
+                $select_post =
+                    "SELECT *
+                    FROM tbposts
+                    WHERE postId='$post_id'";
+                $query_select_post = $conn->query($select_post);
+
+                if (!$query_select_post) {
+                    $error_msg = "Error fetching post.";
+                    errorHandler($error_msg);
+                    exit();
+                }
+
+                $post_details = $query_select_post->fetch_assoc();
+                $post_content = $post_details['content'];
+
+                $insert_deletion_log =
+                    "INSERT INTO tbpostsdeletionlog
+                    (`userId`,`postId`,`content`,`purposeOfDeletion`)
+                    VALUES
+                    (?,?,?,?)";
+                $query_insert_log = $conn->prepare($insert_deletion_log);
+                $query_insert_log->bind_param('ssss',$user_id,$post_id,$post_content,$purpose_of_removal);
+
+                if ($query_insert_log->execute()) {
+                    $delete_post =
+                        "DELETE FROM tbposts
+                        WHERE postId='$post_id'";
+
+                    if ($conn->query($delete_post)) {
+                        setcookie('delete_successful', 'Post deleted successfully.');
+                        header('Location: user_actions.php?user=' . $user_id);
+                        exit();
+                    } else {
+                        $error_msg = "Error deleting post.";
+                        errorHandler($error_msg);
+                        exit();
+                    }
+                } else {
+                    $error_msg = "Error logging deletion record.";
+                    errorHandler($error_msg);
+                    exit();
+                }
+            } else {
+                $error_msg = "Error deleting post images.";
+                errorHandler($error_msg);
+                exit();
+            }
+        } else {
+            $error_msg = "Missing images.";
+            errorHandler($error_msg);
+            exit();
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ban_user'])) { // Ban POST
+    $user_id = $_POST['user_id'];
+    $ban_message = $_POST['ban_message'];
+
+    $sql =
+        "INSERT INTO tbbanlogs
+        (`userId`,`reason`)
+        VALUES
+        (?,?)";
+    $ban = $conn->prepare($sql);
+    $ban->bind_param('ss',$user_id,$ban_message);
+
+    if ($ban->execute()) {
+        setcookie('ban_successful', 'User banned successfully.');
+        header('Location: user_actions.php?user=' . $user_id);
+        exit();
+    } else {
+        $error_msg = 'Error banning user.';
+        errorHandler($error_msg);
+        exit();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unban_user'])) { // Unban UPDATE
+    $user_id = $_POST['user_id'];
+    $admin_username = $_POST['admin_username'];
+    $admin_password = $_POST['admin_password'];
+
+    $admin_check = checkDuplicateAdmin($admin_username);
+
+    if ($admin_check === 'false') {
+        $error_msg = 'Invalid admin username';
+        errorHandler($error_msg);
+        exit();
+    }
+
+    $sql =
+        "SELECT password 
+        FROM tbadmininfo
+        WHERE adminName='$admin_username'";
+    $rs = $conn->query($sql);
+
+    if ($rs) {
+        $hashed_password = $rs->fetch_assoc();
+        
+        if (password_verify($admin_password, $hashed_password['password'])) {
+            $sql =
+                "UPDATE tbbanlogs
+                SET unban='1'
+                WHERE userId='$user_id'";
+            if ($conn->query($sql)) {
+                setcookie('unban_succesful', 'User unbanned successfully');
+                header('Location: user_actions.php?user=' . $user_id);
+                exit();
+            } else {
+                $error_msg = 'Error unbanning user.';
+                errorHandler($error_msg);
+                exit();
+            }
+        } else {
+            $error_msg = 'Wrong password.';
+            errorHandler($error_msg);
+            exit();
+        }
+    } else {
+        $error_msg = 'Error validating password';
+        errorHandler($error_msg);
+        exit();
     }
 }
 

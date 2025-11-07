@@ -19,6 +19,8 @@ getPosts();
 getComments();
 
 getPostsDeletionLog();
+getWarningLogs();
+getBanLogs();
 
 ?>
 
@@ -141,6 +143,13 @@ getPostsDeletionLog();
             <div id="noticeDiv"></div>
         </div>
     </div>
+
+    <div id="warningNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="warningNoticeDiv"></div>
+        </div>
+    </div>
 </body>
 
 <script> // Reload script
@@ -196,6 +205,10 @@ getPostsDeletionLog();
 <script src="js/verify_post.js" defer></script>
 
 <script src="js/post_deletion_warning_log.js" defer></script>
+
+<script src="js/ban_warning_log.js" defer></script>
+
+<script src="js/ban_log.js" defer></script>
 
 <script src="js/logout.js" defer></script>
 
