@@ -30,55 +30,17 @@ getBanLogs();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RecycleHub</title>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0,);
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover, .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .thumbnail {
-            height: 10%;
-            width: 10%;
-        }
-
-        img {
-            height: 10%;
-            width: 10%;
-        }
-    </style>
+    <link rel="stylesheet" href="modal.css">
 </head>
 <body>
-    <h1>News Feed</h1>
+    <div class="userInfo" style="display: none;">
+        <p id="username"></p>
+        <input type="text" id="userId">
+        <p id="userEmail"></p>
+    </div>
 
+    <h1>News Feed</h1>
+    
     <input type="text" id="searchBar" name="searchUser" placeholder="Search users..." autocomplete="off">
     <button id="searchButton">Search</button>
     
@@ -102,7 +64,7 @@ getBanLogs();
         <label for="other">Other</label>
     </div>
 
-    <div class="posts"></div> <!-- Posts -->
+    <div class="posts"></div>
 
     <div id="postModal" class="modal">
         <div class="modal-content">
@@ -152,63 +114,19 @@ getBanLogs();
     </div>
 </body>
 
-<script> // Reload script
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
-</script>
-
-<script> // Set user ID for posting
-    fetch("user_info.json")
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("imageUploadUserId").value = data[0].userId;
-    });
-</script>
-
-<script src="js/home.js" defer></script>
-
-<script defer> // Search script
-    const searchBar = document.getElementById("searchBar");
-    searchBar.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault(); //
-
-            const searchInput = searchBar.value.trim();
-
-            if (searchInput !== "") {
-                const urlParameters = "searchUser=" + searchInput;
-                window.open(`search.php?${urlParameters}`);
-            }
-        }
-    });
-
-    const searchButton = document.getElementById("searchButton");
-    searchButton.addEventListener("click", () => {
-        const searchInput = searchBar.value.trim();
-
-        if (searchInput !== "") {
-            const urlParameters = "searchUser=" + searchInput;
-            window.open("search.php?" + urlParameters);
-        } else {
-            window.open("search.php");
-        }
-    });
-</script>
-
-<script>
-    document.getElementById("goToProfile").addEventListener("click", () => {
-        window.location.href = "profile.php"; 
-    });
-</script>
-
-<script src="js/verify_post.js" defer></script>
+<script src="js/get_user_info.js" defer></script>
 
 <script src="js/post_deletion_warning_log.js" defer></script>
 
 <script src="js/ban_warning_log.js" defer></script>
 
 <script src="js/ban_log.js" defer></script>
+
+<script src="js/home.js" defer></script>
+
+<script src="js/verify_post.js" defer></script>
+
+<script src="js/btn_redirect.js" defer></script>
 
 <script src="js/logout.js" defer></script>
 

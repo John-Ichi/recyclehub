@@ -1,7 +1,7 @@
 const warningNoticeModal = document.getElementById("warningNoticeModal");
 const warningNoticeDiv = document.getElementById("warningNoticeDiv");
 
-fetch("warning_logs.json")
+fetch("warning_logs.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     if (data === null) {

@@ -48,23 +48,36 @@ getAllUsers();
     <button id="goToProfile">Profile</button>
     
     <button id="logOut">Log Out</button>
+
     <div class="users"></div>
+    
+    <div id="postDeletionNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="noticeDiv"></div>
+        </div>
+    </div>
+
+    <div id="warningNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="warningNoticeDiv"></div>
+        </div>
+    </div>
 </body>
 
 <script src="js/get_user_info.js" defer></script>
 
+<script src="js/post_deletion_warning_log.js" defer></script>
+
+<script src="js/ban_warning_log.js" defer></script>
+
+<script src="js/ban_log.js" defer></script>
+
 <script src="js/search.js" defer></script>
 
+<script src="js/btn_redirect.js" defer></script>
+
 <script src="js/logout.js" defer></script>
-
-<script>
-    document.getElementById("returnToHome").addEventListener("click", () => {
-        window.location.href = "home.php";
-    })
-
-    document.getElementById("goToProfile").addEventListener("click", () => {
-        window.location.href = "profile.php";
-    })
-</script>
 
 </html>

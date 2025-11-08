@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 02:31 AM
+-- Generation Time: Nov 08, 2025 at 07:26 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,8 @@ CREATE TABLE `tbbanlogs` (
 
 INSERT INTO `tbbanlogs` (`logId`, `userId`, `reason`, `datetimeCreated`, `unban`) VALUES
 (2, 25, 'You are banned!', '2025-11-06 22:01:05', 1),
-(3, 25, 'u are banned', '2025-11-07 09:12:51', 1);
+(3, 25, 'u are banned', '2025-11-07 09:12:51', 1),
+(4, 21, 'banned ka na', '2025-11-08 14:09:07', 0);
 
 -- --------------------------------------------------------
 
@@ -84,7 +85,9 @@ CREATE TABLE `tbcomments` (
 INSERT INTO `tbcomments` (`commentId`, `postId`, `commentContent`, `userId`, `datetimeCreated`) VALUES
 (44, 48, 'Test', 25, '2025-11-06 13:00:05'),
 (45, 48, 'Test 2', 25, '2025-11-06 13:00:07'),
-(46, 48, 'Profile comment test', 25, '2025-11-06 13:00:15');
+(46, 48, 'Profile comment test', 25, '2025-11-06 13:00:15'),
+(47, 48, 'Test comment', 25, '2025-11-08 13:11:06'),
+(49, 52, 'TEST', 21, '2025-11-08 13:59:45');
 
 -- --------------------------------------------------------
 
@@ -117,7 +120,10 @@ CREATE TABLE `tbimages` (
 --
 
 INSERT INTO `tbimages` (`imageId`, `postId`, `image`, `userId`) VALUES
-(35, 48, 'uploads/img_690c2b511b4765.36387512.jpg', 25);
+(35, 48, 'uploads/img_690c2b511b4765.36387512.jpg', 25),
+(36, 49, 'uploads/img_690ed0b349b615.56365428.jpg', 25),
+(37, 50, 'uploads/img_690ed0ce9c9d77.30427935.jpg', 25),
+(39, 52, 'uploads/img_690edc3ebd1575.59669117.jpg', 21);
 
 -- --------------------------------------------------------
 
@@ -160,7 +166,10 @@ CREATE TABLE `tbposts` (
 --
 
 INSERT INTO `tbposts` (`postId`, `content`, `userId`, `category`) VALUES
-(48, 'POGI', 25, 'Plastic');
+(48, 'POGI', 25, 'Plastic'),
+(49, 'Sky', 25, 'Other(s)'),
+(50, '', 25, 'Scrap Metal'),
+(52, 'LAMP', 21, 'Glass');
 
 -- --------------------------------------------------------
 
@@ -188,7 +197,8 @@ INSERT INTO `tbpostsdeletionlog` (`logId`, `userId`, `postId`, `content`, `purpo
 (8, 25, 44, 'TEST', 'Inappropriate_caption', '2025-11-06 06:34:33', 1),
 (9, 25, 45, 'Test again', 'Inappropriate_image(s)', '2025-11-06 06:35:33', 1),
 (10, 25, 46, 'Comment', 'Inappropriate_comment(s)', '2025-11-06 06:36:06', 1),
-(11, 25, 47, 'Test refresh', 'Inappropriate_caption', '2025-11-06 12:55:24', 1);
+(11, 25, 47, 'Test refresh', 'Inappropriate_caption', '2025-11-06 12:55:24', 1),
+(12, 21, 51, '', 'Inappropriate_image(s)', '2025-11-08 14:07:39', 1);
 
 -- --------------------------------------------------------
 
@@ -211,7 +221,8 @@ CREATE TABLE `tbwarninglogs` (
 INSERT INTO `tbwarninglogs` (`logId`, `userId`, `warningMessage`, `datetimeCreated`, `confirmed`) VALUES
 (1, 25, 'You have too many inappropriate posts, your account is in risk of termination\r\n', '2025-11-06 12:47:01', 1),
 (2, 20, 'Test multiple warning', '2025-11-06 13:15:01', 0),
-(3, 21, 'tes t2', '2025-11-06 13:16:48', 0);
+(3, 21, 'tes t2', '2025-11-06 13:16:48', 1),
+(4, 21, 'test sum', '2025-11-08 14:08:11', 1);
 
 --
 -- Indexes for dumped tables
@@ -297,25 +308,25 @@ ALTER TABLE `tbadmininfo`
 -- AUTO_INCREMENT for table `tbbanlogs`
 --
 ALTER TABLE `tbbanlogs`
-  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tbcomments`
 --
 ALTER TABLE `tbcomments`
-  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `commentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `tbfollows`
 --
 ALTER TABLE `tbfollows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `tbimages`
 --
 ALTER TABLE `tbimages`
-  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `imageId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `tblogininfo`
@@ -327,19 +338,19 @@ ALTER TABLE `tblogininfo`
 -- AUTO_INCREMENT for table `tbposts`
 --
 ALTER TABLE `tbposts`
-  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `tbpostsdeletionlog`
 --
 ALTER TABLE `tbpostsdeletionlog`
-  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tbwarninglogs`
 --
 ALTER TABLE `tbwarninglogs`
-  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `logId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

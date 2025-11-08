@@ -1,4 +1,4 @@
-fetch("ban_logs.json")
+fetch("ban_logs.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     if (data === null) {

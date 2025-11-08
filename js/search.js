@@ -1,7 +1,7 @@
 let url = new URL(window.location.href);
 url.search = "";
 
-if (performance.getEntriesByType("navigation")[0].type === "reload") { // Clear URL when reloaded
+if (performance.getEntriesByType("navigation")[0].type === "reload") {
     window.history.replaceState(null, null, url);
 }
 
@@ -17,41 +17,41 @@ searchBar.value = homeSearchInput;
 const noUsersMessage = document.createElement("p");
 noUsersMessage.textContent = "No user(s) found.";
 
-fetch("users.json")
+fetch("users.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     let filteredUsers = [];
 
     searchBar.addEventListener("input", () => {
-        searchBarInput = searchBar.value.trim().toLowerCase(); // Case sensitivity
+        searchBarInput = searchBar.value.trim().toLowerCase();
 
         filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(searchBarInput));
 
         if (searchBarInput !== "") {
             if (filteredUsers.length === 0) {
                 usersDiv.innerHTML = "";
-                usersDiv.appendChild(noUsersMessage); // Show no user(s) found
+                usersDiv.appendChild(noUsersMessage);
             } else {
-                renderUsers(filteredUsers); // Else render filtered users
+                renderUsers(filteredUsers);
             }
         } else {
-            renderUsers(data); // Render all users when search bar is cleared
+            renderUsers(data);
         }
     });
 
-    if (homeSearchInput !== null) { // Search from home.php
+    if (homeSearchInput !== null) {
         homeSearchInput = homeSearchInput.trim().toLowerCase();
         
         filteredUsers = data.filter(user => user.username.trim().toLowerCase().includes(homeSearchInput));
 
-        if (filteredUsers.length === 0) { // If no users found
+        if (filteredUsers.length === 0) {
             usersDiv.innerHTML = "";
-            usersDiv.appendChild(noUsersMessage); // Show no user(s) found
+            usersDiv.appendChild(noUsersMessage);
         } else {
-            renderUsers(filteredUsers); // Render filtered users
+            renderUsers(filteredUsers);
         }
     } else {
-        renderUsers(data); // Render all users if there is no search input from home.php
+        renderUsers(data);
     }
 
     usersDiv.addEventListener("submit", (e) => {
@@ -66,9 +66,9 @@ fetch("users.json")
 
         var followXhttp = new XMLHttpRequest();
         followXhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) { // Request completed
+            if (this.readyState == 4 && this.status == 200) {
                 if (form.firstChild.value === this.responseText) {
-                    if (form.classList == "followForm") { // Update forms accordingly
+                    if (form.classList == "followForm") {
                         form.classList.replace("followForm", "unfollowForm");
 
                         const submitInput = form.querySelector(".submitInput");
@@ -88,11 +88,10 @@ fetch("users.json")
                         unfollowButton.textContent = "Follow";
                     }
                 }
-
                 var updateXhttp = new XMLHttpRequest();
-                updateXhttp.onreadystatechange = function() { // Update fetched data
-                    if (this.readyState == 4 && this.status == 200) { // After forms submitted and updated
-                        fetch("user_info.json")
+                updateXhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        fetch("user_info.json?nocache=" + new Date().getTime())
                         .then(res => res.json())
                         .then(data => {
                             let usersFollowed = [];
@@ -115,61 +114,61 @@ fetch("users.json")
 });
 
 function renderUsers(users) {
-    usersDiv.innerHTML = ""; // Clear users div
+    usersDiv.innerHTML = "";
 
-    const currentUserId = document.getElementById("userId").value; // Get current user ID
+    const currentUserId = document.getElementById("userId").value;
 
-    users.forEach(user => { // For each user
-        const userDiv = document.createElement("div"); // Create a div
-        userDiv.classList.add("user"); // With class "user"
+    users.forEach(user => {
+        const userDiv = document.createElement("div");
+        userDiv.classList.add("user");
         userDiv.id = user.userId;
 
-        const username = document.createElement("a"); // Create an href a element
-        username.classList.add("username"); // With class "username"
+        const username = document.createElement("a");
+        username.classList.add("username");
         username.id = user.userId;
-        username.href = `user.php?user=${user.userId}`; // with URL
-        username.target = "_blank"; // Open new page
+        username.href = `user.php?user=${user.userId}`;
+        username.target = "_blank";
         username.textContent = user.username;
 
-        userDiv.appendChild(username); // Append username
+        userDiv.appendChild(username);
 
-        const followeeInput = document.createElement("input"); // Followee ID (ID of the user being followed)
+        const followeeInput = document.createElement("input");
         followeeInput.classList.add("followeeInput");
         followeeInput.type = "text";
         followeeInput.name = "followee_id";
         followeeInput.value = user.userId;
 
-        const followerInput = document.createElement("input"); // Follower ID (ID of the user following)
+        const followerInput = document.createElement("input");
         followerInput.classList.add("followerInput");
         followerInput.type = "text";
         followerInput.name = "follower_id";
         followerInput.value = currentUserId;
 
-        const followUser = document.createElement("input"); // Follow validation
+        const followUser = document.createElement("input");
         followUser.classList.add("submitInput");
         followUser.type = "text";
         followUser.name = "follow_user";
         followUser.value = "true";
 
-        const unfollowUser = document.createElement("input"); // Unfollow validation
+        const unfollowUser = document.createElement("input");
         unfollowUser.classList.add("submitInput");
         unfollowUser.type = "text";
         unfollowUser.name = "unfollow_user";
         unfollowUser.value = "true";
 
-        const followButton = document.createElement("button"); // Follow button
+        const followButton = document.createElement("button");
         followButton.classList.add("follow");
         followButton.type = "submit";
         followButton.textContent = "Follow";
 
-        const unfollowButton = document.createElement("button"); // Unfollow button
+        const unfollowButton = document.createElement("button");
         unfollowButton.classList.add("unfollow");
         unfollowButton.type = "submit";
         unfollowButton.textContent = "Unfollow";
 
-        const usersFollowed = window.usersFollowed; // Users followed by session user
+        const usersFollowed = window.usersFollowed;
 
-        if (usersFollowed.includes(user.userId)) { // For followed users
+        if (usersFollowed.includes(user.userId)) {
             const unfollowForm = document.createElement("form");
             unfollowForm.classList.add("unfollowForm");
             unfollowForm.action = "follow.php";
@@ -179,9 +178,8 @@ function renderUsers(users) {
             unfollowForm.appendChild(followerInput);
             unfollowForm.appendChild(unfollowUser);
             unfollowForm.appendChild(unfollowButton);
-
             userDiv.appendChild(unfollowForm);
-        } else { // For unfollowed users
+        } else {
             const followForm = document.createElement("form");
             followForm.classList.add("followForm");
             followForm.action = "follow.php";
@@ -196,16 +194,13 @@ function renderUsers(users) {
                 userDiv.appendChild(followForm);
             }
         }
-        
-        usersDiv.appendChild(userDiv); // Append div
-
+        usersDiv.appendChild(userDiv);
         redirectCurrentUserToProfile(currentUserId);
     });
 }
 
 function redirectCurrentUserToProfile(userId) {
     const users = document.querySelectorAll(".username");
-
     users.forEach(user => {
         if (user.id === userId) {
             user.href = "profile.php";

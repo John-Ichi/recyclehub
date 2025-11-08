@@ -1,7 +1,7 @@
 const postDeletionNoticeModal = document.getElementById("postDeletionNoticeModal");
 const postDeletionNoticeDiv = document.getElementById("noticeDiv");
 
-fetch("deleted_logs.json")
+fetch("deleted_logs.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     if (data === null) {

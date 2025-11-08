@@ -12,9 +12,19 @@ closeCommentModalBtn.addEventListener("click", () => {
     postCommentsDiv.innerHTML = "";
 });
 
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        if (commentModal.style.display === "block") {
+            commentModal.style.display = "none";
+            commentsDiv.innerHTML = "";
+            postCommentsDiv.innerHTML = "";
+        }
+    }
+});
+
 let filterArray = [];
 
-fetch("posts.json")
+fetch("posts.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     if (data === null) {
@@ -24,18 +34,20 @@ fetch("posts.json")
 
     let userId;
 
-    if (document.getElementById("searchUserId") === null) {
+    if (document.getElementById("searchUserId")) {
+        userId = document.getElementById("searchUserId").value;
+    } else {
         userId = document.getElementById("userId").value;
         document.getElementById("imageUploadUserId").value = userId;
-    } else {
-        userId = document.getElementById("searchUserId").value;
     }
+
     const filterPostsByUserId = data.filter(post => post.userId === userId);
 
     if (filterPostsByUserId.length === 0) {
         postsDiv.innerHTML = "No post(s) yet."
         return;
     }
+
     filterSelection.forEach(btn => {
         btn.addEventListener("change", () => {
             if (btn.checked) {
@@ -50,7 +62,12 @@ fetch("posts.json")
                 return;
             }
             const filteredPosts = filterPostsByUserId.filter(post => filterArray.includes(post.category));
-            renderPosts(filteredPosts);
+            if (filteredPosts.length === 0) {
+                postsDiv.innerHTML = "No post(s) to see.";
+                return;
+            } else {
+                renderPosts(filteredPosts);
+            }
         });
         renderPosts(filterPostsByUserId);
     });
@@ -92,50 +109,50 @@ function renderPosts(posts) {
             innerPostDiv.appendChild(caption);
         }
 
-        const commentBtn = document.createElement("button"); // Create comment button
+        const commentBtn = document.createElement("button");
         commentBtn.textContent = "Comment";
 
         commentBtn.addEventListener("click", () => {
-            commentModal.style.display = "block"; // Open comment modal
-            postCommentsDiv.innerHTML = ""; // Clear div
+            commentModal.style.display = "block";
+            postCommentsDiv.innerHTML = "";
 
-            const commentForm = document.createElement("form"); // Create form for posting comments
+            const commentForm = document.createElement("form");
             commentForm.id = "commentForm";
             commentForm.action = "functions.php";
             commentForm.method = "POST";
 
-            const postIdField = document.createElement("input"); // Input post ID
+            const postIdField = document.createElement("input");
             postIdField.type = "hidden";
             postIdField.name = "post_id";
             postIdField.value = postId;
 
-            const commenterField = document.createElement("input"); // Input user ID
+            const commenterField = document.createElement("input");
             commenterField.type = "hidden";
             commenterField.name = "commenter";
             commenterField.value = document.getElementById("userId").value;
 
-            const commentField = document.createElement("textarea"); // Input for comment
+            const commentField = document.createElement("textarea");
             commentField.name = "comment";
             commentField.maxLength = 250;
 
-            const postComment = document.createElement("input"); // Extra validation
+            const postComment = document.createElement("input");
             postComment.type = "hidden";
             postComment.name = "post_comment";
             postComment.value = "true";
 
-            const submitComment = document.createElement("button"); // Submit
+            const submitComment = document.createElement("button");
             submitComment.type = "submit";
             submitComment.textContent = "Comment";
 
-            commentForm.addEventListener("submit", (e) => { // When submitted
-                e.preventDefault(); // Prevent reload/redirect
+            commentForm.addEventListener("submit", (e) => {
+                e.preventDefault();
 
-                if (commentField.value === "") { // If empty
+                if (commentField.value === "") {
                     return;
                 } else if (commentField.value !== "") {
                     const formData = new FormData(commentForm);
 
-                    var commentXhttp = new XMLHttpRequest(); // Post comment
+                    var commentXhttp = new XMLHttpRequest();
                     commentXhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
                             commentField.value = "";
@@ -151,9 +168,7 @@ function renderPosts(posts) {
             commentForm.appendChild(commentField);
             commentForm.appendChild(postComment);
             commentForm.appendChild(submitComment);
-
             postCommentsDiv.appendChild(commentForm);
-
             renderComments();
         });
         innerPostDiv.appendChild(commentBtn);
@@ -162,29 +177,38 @@ function renderPosts(posts) {
 }
 
 function renderComments() {
-    const commentForm = document.getElementById("commentForm"); // Select comment form
-    const postId = commentForm.firstChild.value; // Get post ID via comment form
+    const commentForm = document.getElementById("commentForm");
+    const postId = commentForm.firstChild.value;
 
-    fetch("comments.json?nocache=" + new Date().getTime()) // Get all comments
+    fetch("comments.json?nocache=" + new Date().getTime())
     .then(res => res.json())
     .then(data => {
-        const postComments = data.filter(comment => comment.postId == postId); // Filter comments by post ID
+        if (data === null) {
+            commentsDiv.innerHTML = "No comment(s) yet.";
+            return;
+        }
+
+        const postComments = data.filter(comment => comment.postId == postId);
+
+        if (postComments.length === 0) {
+            commentsDiv.innerHTML = "No comment(s) yet.";
+            return;
+        }
 
         commentsDiv.innerHTML = "";
 
-        postComments.forEach(comment => { // For each comment
-            const commentContainer = document.createElement("div"); // Create a comment container
+        postComments.forEach(comment => {
+            const commentContainer = document.createElement("div");
             commentContainer.classList.add("comment");
 
-            const commenter = document.createElement("h4"); // Add commenter username
+            const commenter = document.createElement("h4");
             commenter.textContent = comment.username;
 
-            const commentContent = document.createElement("p"); // Add comment
+            const commentContent = document.createElement("p");
             commentContent.textContent = comment.commentContent;
 
             commentContainer.appendChild(commenter);
             commentContainer.appendChild(commentContent);
-
             commentsDiv.appendChild(commentContainer);
         });
     });

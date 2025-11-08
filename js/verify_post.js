@@ -9,7 +9,7 @@ postBtn.addEventListener("click", () => {
     postModal.style.display = "block";
 });
 
-closePostModalBtn.addEventListener("click", () => { // Close post modal [note: add a confirmation for discarding post]
+closePostModalBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to terminate posting?")) {
         postForm.reset();
         previewContainer.innerHTML = "";
@@ -17,7 +17,18 @@ closePostModalBtn.addEventListener("click", () => { // Close post modal [note: a
     }
 });
 
-// Image preview for selected images
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        if (postModal.style.display === "block") {
+            if (confirm("Are you sure you want to terminate posting?")) {
+                postForm.reset();
+                previewContainer.innerHTML = "";
+                postModal.style.display = "none";
+            }
+        }
+    }
+});
+
 imageUpload.addEventListener("change", () => {
     previewContainer.innerHTML = "";
 
@@ -25,7 +36,7 @@ imageUpload.addEventListener("change", () => {
     const files = imageUpload.files;
     const numOfFiles = imageUpload.files.length;
 
-    if (numOfFiles > 5) { // Limit number of posts client-side
+    if (numOfFiles > 5) {
         alert("The maximum number of uploads is 5.");
         imageUpload.value = "";
         previewContainer.innerHTML = "";
@@ -33,7 +44,7 @@ imageUpload.addEventListener("change", () => {
     } else {
         for (const file of files) {
             if (file.size > MAX_FILE_SIZE) {
-                alert("The maximum file size allowed is 10 MB."); // Client-side file size check
+                alert("The maximum file size allowed is 10 MB.");
                 imageUpload.value = "";
                 previewContainer.innerHTML = "";
                 return;

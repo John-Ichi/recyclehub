@@ -501,7 +501,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_register'])) { 
         header('Location: admin.php');
         exit();
     } else {
-        $error_msg = 'Registraion unsuccesful.';
+        $error_msg = 'Registration unsuccesful.';
         adminError($error_msg);
         exit();
     }

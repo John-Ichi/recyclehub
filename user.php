@@ -18,46 +18,7 @@ getComments();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RecycleHub</title>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0,);
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover, .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        img {
-            height: 10%;
-            width: 10%;
-        }
-    </style>
+    <link rel="stylesheet" href="modal.css">
 </head>
 <body>
     <button id="returnToHome">Home</button>
@@ -105,27 +66,34 @@ getComments();
         </div>
     </div>
 
+    <div id="postDeletionNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="noticeDiv"></div>
+        </div>
+    </div>
+
+    <div id="warningNoticeModal" class="modal">
+        <div class="modal-content">
+            <h2>Notice</h2>
+            <div id="warningNoticeDiv"></div>
+        </div>
+    </div>
 </body>
 
 <script src="js/get_user_info.js" defer></script>
+
+<script src="js/post_deletion_warning_log.js" defer></script>
+
+<script src="js/ban_warning_log.js" defer></script>
+
+<script src="js/ban_log.js" defer></script>
 
 <script src="js/get_search_user_info.js" defer></script>
 
 <script src="js/display_user_posts.js" defer></script>
 
-<script>
-    document.getElementById("returnToHome").addEventListener("click", () => {
-        window.location.href = "home.php";
-    });
-
-    document.getElementById("goToSearch").addEventListener("click", () => {
-        window.location.href = "search.php";
-    });
-
-    document.getElementById("goToProfile").addEventListener("click", () => {
-        window.location.href = "profile.php";
-    });
-</script>
+<script src="js/btn_redirect.js" defer></script>
 
 <script src="js/logout.js" defer></script>
 

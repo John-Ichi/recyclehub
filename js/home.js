@@ -1,3 +1,33 @@
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
+
+const searchBar = document.getElementById("searchBar");
+searchBar.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        
+        const searchInput = searchBar.value.trim();
+
+        if (searchInput !== "") {
+            const urlParameters = "searchUser=" + searchInput;
+            window.open(`search.php?${urlParameters}`);
+        }
+    }
+});
+
+const searchButton = document.getElementById("searchButton");
+searchButton.addEventListener("click", () => {
+    const searchInput = searchBar.value.trim();
+
+    if (searchInput !== "") {
+        const urlParameters = "searchUser=" + searchInput;
+        window.open("search.php?" + urlParameters);
+    } else {
+        window.open("search.php");
+    }
+});
+
 const filterSelection = document.querySelectorAll(".filterPosts");
 const postsDiv = document.querySelector(".posts");
 
@@ -24,7 +54,7 @@ window.addEventListener("keydown", (e) => {
 
 let filterArray = [];
 
-fetch("posts.json")
+fetch("posts.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
     if (data === null) {
@@ -32,21 +62,21 @@ fetch("posts.json")
         return;
     }
 
-    filterSelection.forEach(btn => { // Filter
-        btn.addEventListener("change", () => { // Check each checkbox
-            if (btn.checked) { // Push the value of checked boxes in the filterArray
+    filterSelection.forEach(btn => {
+        btn.addEventListener("change", () => {
+            if (btn.checked) {
                 filterArray.push(btn.value);
             } else {
-                let index = filterArray.indexOf(btn.value); // Remove when unchecked
+                let index = filterArray.indexOf(btn.value);
                 filterArray.splice(index, 1);
             }
 
-            if (filterArray.length === 0) { // If the filterArray is empty, there are no filters then render all posts
+            if (filterArray.length === 0) {
                 renderPosts(data);
                 return;
             }
+
             const filteredPosts = data.filter(post => filterArray.includes(post.category));
-            
             if (filteredPosts.length === 0) {
                 postsDiv.innerHTML = "No post(s) to see.";
                 return;
@@ -64,83 +94,83 @@ function renderPosts(posts) {
     /** Set non-integer ID to order posts based on php SELECT */
     /** Randomize posts */
 
-    const groupedPosts = posts.reduce((groupedPostsArray, post) => { // Initialize array for grouping, iterate through posts by element post
-        if (!groupedPostsArray[post.postId]) { // If post ID is not in new array
-            groupedPostsArray[post.postId] = []; // Create a new array for post with ID 
+    const groupedPosts = posts.reduce((groupedPostsArray, post) => {
+        if (!groupedPostsArray[post.postId]) {
+            groupedPostsArray[post.postId] = [];
         }
-        groupedPostsArray[post.postId].push(post); // Push post info to the array
+        groupedPostsArray[post.postId].push(post);
         return groupedPostsArray;
-    }, {}); // Curly braces here is the groupedPostsArray
+    }, {});
 
-    Object.entries(groupedPosts).forEach(([id, group]) => { // Iterate through groupedPostsArray per ID/go into each group of posts/images per ID
+    Object.entries(groupedPosts).forEach(([id, group]) => {
         const innerPostDiv = document.createElement("div");
         const postId = group[0].postId;
         innerPostDiv.id = postId;
         innerPostDiv.classList.add("post");
 
-        const postUsername = document.createElement("h4"); // Set username
+        const postUsername = document.createElement("h4");
         postUsername.textContent = group[0].username;
         innerPostDiv.appendChild(postUsername);
 
-        const caption = document.createElement("p"); // Create paragraph element for caption
-        caption.textContent = group[0].content || ""; // Per group, use the first group.content [since all content per group is the same]
+        const caption = document.createElement("p");
+        caption.textContent = group[0].content || "";
 
-        group.forEach(post => { // Iterate through each group
-            if (post.image != null) { // If image exists
-                const img = document.createElement("img"); // Create img element
-                img.src = post.image; // Use path as source
+        group.forEach(post => {
+            if (post.image != null) {
+                const img = document.createElement("img");
+                img.src = post.image;
                 innerPostDiv.appendChild(img);
             }
         });
         
-        if (caption.textContent != "") { // Caption is not blank
+        if (caption.textContent != "") {
             innerPostDiv.appendChild(caption);
         }
 
-        const commentBtn = document.createElement("button"); // Create comment button
+        const commentBtn = document.createElement("button");
         commentBtn.textContent = "Comment";
 
-        commentBtn.addEventListener("click", () => { // When button is clicked
-            commentModal.style.display = "block"; // Open comment modal
-            postCommentsDiv.innerHTML = ""; // Clear div
+        commentBtn.addEventListener("click", () => {
+            commentModal.style.display = "block";
+            postCommentsDiv.innerHTML = "";
 
-            const commentForm = document.createElement("form"); // Create form for posting comments
+            const commentForm = document.createElement("form");
             commentForm.id = "commentForm";
             commentForm.action = "functions.php";
             commentForm.method = "POST";
 
-            const postIdField = document.createElement("input"); // Input post ID
+            const postIdField = document.createElement("input");
             postIdField.type = "hidden";
             postIdField.name = "post_id";
             postIdField.value = postId;
             
-            const commenterField = document.createElement("input"); // Input user ID
+            const commenterField = document.createElement("input");
             commenterField.type = "hidden";
             commenterField.name = "commenter";
             commenterField.value = document.getElementById("imageUploadUserId").value;
 
-            const commentField = document.createElement("textarea"); // Input for comment
+            const commentField = document.createElement("textarea");
             commentField.name = "comment";
             commentField.maxLength = 250;
 
-            const postComment = document.createElement("input"); // Extra validation
+            const postComment = document.createElement("input");
             postComment.type = "hidden";
             postComment.name = "post_comment";
             postComment.value = "true";
 
-            const submitComment = document.createElement("button"); // Submit
+            const submitComment = document.createElement("button");
             submitComment.type = "submit";
             submitComment.textContent = "Comment";
 
-            commentForm.addEventListener("submit", (e) => { // When submitted
-                e.preventDefault(); // Prevent reload/redirect
+            commentForm.addEventListener("submit", (e) => {
+                e.preventDefault();
 
-                if (commentField.value === "") { // If empty
+                if (commentField.value === "") {
                     return;
                 } else if (commentField.value !== "") {
                     const formData = new FormData(commentForm);
 
-                    var commentXhttp = new XMLHttpRequest(); // Post comment
+                    var commentXhttp = new XMLHttpRequest();
                     commentXhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
                             commentField.value = "";
@@ -156,9 +186,7 @@ function renderPosts(posts) {
             commentForm.appendChild(commentField);
             commentForm.appendChild(postComment);
             commentForm.appendChild(submitComment);
-
             postCommentsDiv.appendChild(commentForm);
-
             renderComments();
         });
         innerPostDiv.appendChild(commentBtn);
@@ -167,10 +195,10 @@ function renderPosts(posts) {
 }
 
 function renderComments() {
-    const commentForm = document.getElementById("commentForm"); // Select comment form
-    const postId = commentForm.firstChild.value; // Get post ID via comment form
+    const commentForm = document.getElementById("commentForm");
+    const postId = commentForm.firstChild.value;
 
-    fetch("comments.json?nocache=" + new Date().getTime()) // Get all comments
+    fetch("comments.json?nocache=" + new Date().getTime())
     .then(res => res.json())
     .then(data => {
         if (data === null) {
@@ -178,23 +206,27 @@ function renderComments() {
             return;
         }
 
-        const postComments = data.filter(comment => comment.postId == postId); // Filter comments by post ID
+        const postComments = data.filter(comment => comment.postId == postId);
+
+        if (postComments.length === 0) {
+            commentsDiv.innerHTML = "No comment(s) yet.";
+            return;
+        }
 
         commentsDiv.innerHTML = "";
 
-        postComments.forEach(comment => { // For each comment
-            const commentContainer = document.createElement("div"); // Create a comment container
+        postComments.forEach(comment => {
+            const commentContainer = document.createElement("div");
             commentContainer.classList.add("comment");
 
-            const commenter = document.createElement("h4"); // Add commenter username
+            const commenter = document.createElement("h4");
             commenter.textContent = comment.username;
 
-            const commentContent = document.createElement("p"); // Add comment
+            const commentContent = document.createElement("p");
             commentContent.textContent = comment.commentContent;
 
             commentContainer.appendChild(commenter);
             commentContainer.appendChild(commentContent);
-
             commentsDiv.appendChild(commentContainer)
         });
     });
