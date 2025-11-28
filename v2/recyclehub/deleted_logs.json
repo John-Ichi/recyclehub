@@ -1,0 +1,74 @@
+[
+    {
+        "logId": "6",
+        "userId": "25",
+        "postId": "42",
+        "content": "For deletion",
+        "purposeOfDeletion": "Inappropriate_image(s)",
+        "datetimeCreated": "2025-11-06 05:35:28",
+        "confirmed": "1"
+    },
+    {
+        "logId": "7",
+        "userId": "25",
+        "postId": "43",
+        "content": "Test deletion 2",
+        "purposeOfDeletion": "Inappropriate_image(s)",
+        "datetimeCreated": "2025-11-06 05:42:27",
+        "confirmed": "1"
+    },
+    {
+        "logId": "8",
+        "userId": "25",
+        "postId": "44",
+        "content": "TEST",
+        "purposeOfDeletion": "Inappropriate_caption",
+        "datetimeCreated": "2025-11-06 06:34:33",
+        "confirmed": "1"
+    },
+    {
+        "logId": "9",
+        "userId": "25",
+        "postId": "45",
+        "content": "Test again",
+        "purposeOfDeletion": "Inappropriate_image(s)",
+        "datetimeCreated": "2025-11-06 06:35:33",
+        "confirmed": "1"
+    },
+    {
+        "logId": "10",
+        "userId": "25",
+        "postId": "46",
+        "content": "Comment",
+        "purposeOfDeletion": "Inappropriate_comment(s)",
+        "datetimeCreated": "2025-11-06 06:36:06",
+        "confirmed": "1"
+    },
+    {
+        "logId": "11",
+        "userId": "25",
+        "postId": "47",
+        "content": "Test refresh",
+        "purposeOfDeletion": "Inappropriate_caption",
+        "datetimeCreated": "2025-11-06 12:55:24",
+        "confirmed": "1"
+    },
+    {
+        "logId": "12",
+        "userId": "21",
+        "postId": "51",
+        "content": "",
+        "purposeOfDeletion": "Inappropriate_image(s)",
+        "datetimeCreated": "2025-11-08 14:07:39",
+        "confirmed": "1"
+    },
+    {
+        "logId": "13",
+        "userId": "24",
+        "postId": "30",
+        "content": "ggfgfg",
+        "purposeOfDeletion": "Inappropriate_caption",
+        "datetimeCreated": "2025-11-16 13:56:56",
+        "confirmed": "1"
+    }
+]

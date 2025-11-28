@@ -1,0 +1,23 @@
+[
+    {
+        "logId": "2",
+        "userId": "25",
+        "reason": "You are banned!",
+        "datetimeCreated": "2025-11-06 22:01:05",
+        "unban": "1"
+    },
+    {
+        "logId": "3",
+        "userId": "25",
+        "reason": "u are banned",
+        "datetimeCreated": "2025-11-07 09:12:51",
+        "unban": "1"
+    },
+    {
+        "logId": "4",
+        "userId": "21",
+        "reason": "banned ka na",
+        "datetimeCreated": "2025-11-08 14:09:07",
+        "unban": "0"
+    }
+]

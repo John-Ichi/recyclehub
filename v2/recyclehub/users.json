@@ -1,0 +1,52 @@
+[
+    {
+        "userId": "25",
+        "userEmail": "admin1@gmail.com",
+        "username": "Aj"
+    },
+    {
+        "userId": "26",
+        "userEmail": "admin2@gmail.com",
+        "username": "aj1"
+    },
+    {
+        "userId": "24",
+        "userEmail": "admin@gmail.com",
+        "username": "admin"
+    },
+    {
+        "userId": "30",
+        "userEmail": "asdasd",
+        "username": "asd"
+    },
+    {
+        "userId": "29",
+        "userEmail": "chichi@mail.com",
+        "username": "testinguli"
+    },
+    {
+        "userId": "21",
+        "userEmail": "dummyemail1@mail.com",
+        "username": "dummyuser1"
+    },
+    {
+        "userId": "20",
+        "userEmail": "dummyemail2@mail.com",
+        "username": "dummyuser2"
+    },
+    {
+        "userId": "23",
+        "userEmail": "dummyemail@mail.com",
+        "username": "dummyuser"
+    },
+    {
+        "userId": "28",
+        "userEmail": "ichi@mail.com",
+        "username": "testing"
+    },
+    {
+        "userId": "27",
+        "userEmail": "user1@gmail.com",
+        "username": "user"
+    }
+]

@@ -1,0 +1,122 @@
+[
+    {
+        "commentId": "25",
+        "postId": "28",
+        "commentContent": "New test comment!",
+        "userId": "23",
+        "datetimeCreated": "2025-11-03 16:25:19",
+        "username": "dummyuser"
+    },
+    {
+        "commentId": "26",
+        "postId": "24",
+        "commentContent": "Test comment for user",
+        "userId": "23",
+        "datetimeCreated": "2025-11-03 16:39:12",
+        "username": "dummyuser"
+    },
+    {
+        "commentId": "27",
+        "postId": "25",
+        "commentContent": "One more test comment",
+        "userId": "23",
+        "datetimeCreated": "2025-11-03 16:39:22",
+        "username": "dummyuser"
+    },
+    {
+        "commentId": "28",
+        "postId": "36",
+        "commentContent": "Test comment",
+        "userId": "21",
+        "datetimeCreated": "2025-11-03 17:16:09",
+        "username": "dummyuser1"
+    },
+    {
+        "commentId": "29",
+        "postId": "23",
+        "commentContent": "Test comment 2",
+        "userId": "21",
+        "datetimeCreated": "2025-11-03 17:16:20",
+        "username": "dummyuser1"
+    },
+    {
+        "commentId": "31",
+        "postId": "31",
+        "commentContent": "Test again",
+        "userId": "25",
+        "datetimeCreated": "2025-11-03 17:17:57",
+        "username": "Aj"
+    },
+    {
+        "commentId": "32",
+        "postId": "23",
+        "commentContent": "Test comment for user.php",
+        "userId": "25",
+        "datetimeCreated": "2025-11-03 17:19:58",
+        "username": "Aj"
+    },
+    {
+        "commentId": "34",
+        "postId": "32",
+        "commentContent": "HELLO\r\n",
+        "userId": "24",
+        "datetimeCreated": "2025-11-06 11:10:40",
+        "username": "admin"
+    },
+    {
+        "commentId": "35",
+        "postId": "32",
+        "commentContent": "HI\r\n",
+        "userId": "24",
+        "datetimeCreated": "2025-11-06 11:10:46",
+        "username": "admin"
+    },
+    {
+        "commentId": "36",
+        "postId": "32",
+        "commentContent": "Hello\r\n",
+        "userId": "24",
+        "datetimeCreated": "2025-11-06 11:48:16",
+        "username": "admin"
+    },
+    {
+        "commentId": "50",
+        "postId": "43",
+        "commentContent": "im here",
+        "userId": "24",
+        "datetimeCreated": "2025-11-16 13:27:27",
+        "username": "admin"
+    },
+    {
+        "commentId": "51",
+        "postId": "31",
+        "commentContent": "Im here",
+        "userId": "24",
+        "datetimeCreated": "2025-11-16 13:47:23",
+        "username": "admin"
+    },
+    {
+        "commentId": "52",
+        "postId": "31",
+        "commentContent": "Hello",
+        "userId": "24",
+        "datetimeCreated": "2025-11-17 08:11:09",
+        "username": "admin"
+    },
+    {
+        "commentId": "53",
+        "postId": "31",
+        "commentContent": "Hello",
+        "userId": "24",
+        "datetimeCreated": "2025-11-17 08:18:20",
+        "username": "admin"
+    },
+    {
+        "commentId": "54",
+        "postId": "31",
+        "commentContent": "Hi\r\n",
+        "userId": "24",
+        "datetimeCreated": "2025-11-17 08:23:17",
+        "username": "admin"
+    }
+]

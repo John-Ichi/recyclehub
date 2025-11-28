@@ -1,0 +1,30 @@
+[
+    {
+        "logId": "1",
+        "userId": "25",
+        "warningMessage": "You have too many inappropriate posts, your account is in risk of termination\r\n",
+        "datetimeCreated": "2025-11-06 12:47:01",
+        "confirmed": "1"
+    },
+    {
+        "logId": "2",
+        "userId": "20",
+        "warningMessage": "Test multiple warning",
+        "datetimeCreated": "2025-11-06 13:15:01",
+        "confirmed": "0"
+    },
+    {
+        "logId": "3",
+        "userId": "21",
+        "warningMessage": "tes t2",
+        "datetimeCreated": "2025-11-06 13:16:48",
+        "confirmed": "1"
+    },
+    {
+        "logId": "4",
+        "userId": "21",
+        "warningMessage": "test sum",
+        "datetimeCreated": "2025-11-08 14:08:11",
+        "confirmed": "1"
+    }
+]
