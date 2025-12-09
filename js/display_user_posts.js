@@ -6,11 +6,13 @@ const closeCommentModalBtn = commentModal.querySelector(".close");
 const commentsDiv = document.getElementById("comments");
 const postCommentsDiv = document.getElementById("postComments");
 
+
 closeCommentModalBtn.addEventListener("click", () => {
     commentModal.style.display = "none";
     commentsDiv.innerHTML = "";
     postCommentsDiv.innerHTML = "";
 });
+
 
 window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -24,9 +26,12 @@ window.addEventListener("keydown", (e) => {
 
 let filterArray = [];
 
+
 fetch("posts.json?nocache=" + new Date().getTime())
 .then(res => res.json())
 .then(data => {
+    console.log("Fetched posts data:", data);
+    
     if (data === null) {
         postsDiv.innerHTML = "No post(s) yet.";
         return;
@@ -40,14 +45,18 @@ fetch("posts.json?nocache=" + new Date().getTime())
         userId = document.getElementById("userId").value;
         document.getElementById("imageUploadUserId").value = userId;
     }
-
+    
+    console.log("Filtering by userId:", userId);
     const filterPostsByUserId = data.filter(post => post.userId === userId);
+    console.log("Filtered posts:", filterPostsByUserId);
 
     if (filterPostsByUserId.length === 0) {
         postsDiv.innerHTML = "No post(s) yet."
         return;
     }
-
+    
+    renderPosts(filterPostsByUserId);
+    
     filterSelection.forEach(btn => {
         btn.addEventListener("change", () => {
             if (btn.checked) {
@@ -61,7 +70,9 @@ fetch("posts.json?nocache=" + new Date().getTime())
                 renderPosts(filterPostsByUserId);
                 return;
             }
+            
             const filteredPosts = filterPostsByUserId.filter(post => filterArray.includes(post.category));
+            
             if (filteredPosts.length === 0) {
                 postsDiv.innerHTML = "No post(s) to see.";
                 return;
@@ -69,11 +80,15 @@ fetch("posts.json?nocache=" + new Date().getTime())
                 renderPosts(filteredPosts);
             }
         });
-        renderPosts(filterPostsByUserId);
     });
+})
+.catch(error => {
+    console.error("Error fetching posts:", error);
+    postsDiv.innerHTML = "Error loading posts.";
 });
 
 function renderPosts(posts) {
+    console.log("Rendering posts:", posts);
     postsDiv.innerHTML = "";
 
     const groupedPosts = posts.reduce((groupedPostsArray, post) => {
@@ -84,96 +99,187 @@ function renderPosts(posts) {
         return groupedPostsArray;
     }, {});
 
+    console.log("Grouped posts:", groupedPosts);
+
     Object.entries(groupedPosts).forEach(([id, group]) => {
-        const innerPostDiv = document.createElement("div");
-        const postId = group[0].postId;
-        innerPostDiv.id = postId;
-        innerPostDiv.classList.add("post");
-
-        const postUsername = document.createElement("h4");
-        postUsername.textContent = group[0].username;
-        innerPostDiv.appendChild(postUsername);
-
-        const caption = document.createElement("p");
-        caption.textContent = group[0].content || "";
-
-        group.forEach(post => {
-            if (post.image != null) {
-                const img = document.createElement("img");
-                img.src = post.image;
-                innerPostDiv.appendChild(img);
-            }
-        });
+        console.log("Rendering post group:", id, group);
         
-        if (caption.textContent != "") {
-            innerPostDiv.appendChild(caption);
+        const firstPost = group[0];
+        
+        const postDiv = document.createElement("div");
+        postDiv.classList.add("post");
+        postDiv.id = firstPost.postId;
+
+        const postHeader = document.createElement("div");
+        postHeader.classList.add("post-header");
+
+        const postUserInfo = document.createElement("div");
+        postUserInfo.classList.add("post-user-info");
+
+        const postAvatar = document.createElement("div");
+        postAvatar.classList.add("post-avatar");
+        postAvatar.textContent = firstPost.username ? firstPost.username.charAt(0).toUpperCase() : "?";
+
+        const postUserDetails = document.createElement("div");
+        postUserDetails.classList.add("post-user-details");
+
+        const usernameH4 = document.createElement("h4");
+        usernameH4.textContent = firstPost.username;
+
+        const userMetaP = document.createElement("p");
+        
+        const categoryBadge = document.createElement("span");
+        categoryBadge.classList.add("post-category");
+        categoryBadge.textContent = firstPost.category || "Other";
+        
+        userMetaP.appendChild(categoryBadge);
+
+        postUserDetails.appendChild(usernameH4);
+        postUserDetails.appendChild(userMetaP);
+
+        postUserInfo.appendChild(postAvatar);
+        postUserInfo.appendChild(postUserDetails);
+
+        const postMenu = document.createElement("div");
+        postMenu.classList.add("post-menu");
+        /*postMenu.textContent = "⋯";*/
+
+        postHeader.appendChild(postUserInfo);
+        postHeader.appendChild(postMenu);
+
+        postDiv.appendChild(postHeader);
+
+        if (firstPost.content && firstPost.content !== "") {
+            console.log("Adding caption:", firstPost.content);
+            const postText = document.createElement("div");
+            postText.classList.add("post-text");
+            postText.textContent = firstPost.content;
+            postDiv.appendChild(postText);
         }
 
+
+        const images = group.filter(post => post.image && post.image !== null && post.image !== "");
+        
+        if (images.length > 0) {
+            if (images.length === 1) {
+
+                const postImageContainer = document.createElement("div");
+                postImageContainer.classList.add("post-image-container");
+                
+                const img = document.createElement("img");
+                img.classList.add("post-image");
+                img.src = images[0].image;
+                img.alt = "Post image";
+                
+                postImageContainer.appendChild(img);
+                postDiv.appendChild(postImageContainer);
+            } else if (images.length === 2) {
+                const postImageContainer = document.createElement("div");
+                postImageContainer.classList.add("post-image-container", "multi-image", "two-images");
+                
+                images.forEach(post => {
+                    const img = document.createElement("img");
+                    img.classList.add("post-image");
+                    img.src = post.image;
+                    img.alt = "Post image";
+                    postImageContainer.appendChild(img);
+                });
+                
+                postDiv.appendChild(postImageContainer);
+            } else {
+                const postImageContainer = document.createElement("div");
+                postImageContainer.classList.add("post-image-container", "multi-image");
+                
+                images.forEach(post => {
+                    const img = document.createElement("img");
+                    img.classList.add("post-image");
+                    img.src = post.image;
+                    img.alt = "Post image";
+                    postImageContainer.appendChild(img);
+                });
+                
+                postDiv.appendChild(postImageContainer);
+            }
+        }
+        const postActions = document.createElement("div");
+        postActions.classList.add("post-actions");
+
         const commentBtn = document.createElement("button");
+        commentBtn.classList.add("post-action-btn");
         commentBtn.textContent = "Comment";
-
         commentBtn.addEventListener("click", () => {
-            commentModal.style.display = "block";
-            postCommentsDiv.innerHTML = "";
-
-            const commentForm = document.createElement("form");
-            commentForm.id = "commentForm";
-            commentForm.action = "functions.php";
-            commentForm.method = "POST";
-
-            const postIdField = document.createElement("input");
-            postIdField.type = "hidden";
-            postIdField.name = "post_id";
-            postIdField.value = postId;
-
-            const commenterField = document.createElement("input");
-            commenterField.type = "hidden";
-            commenterField.name = "commenter";
-            commenterField.value = document.getElementById("userId").value;
-
-            const commentField = document.createElement("textarea");
-            commentField.name = "comment";
-            commentField.maxLength = 250;
-
-            const postComment = document.createElement("input");
-            postComment.type = "hidden";
-            postComment.name = "post_comment";
-            postComment.value = "true";
-
-            const submitComment = document.createElement("button");
-            submitComment.type = "submit";
-            submitComment.textContent = "Comment";
-
-            commentForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-
-                if (commentField.value === "") {
-                    return;
-                } else if (commentField.value !== "") {
-                    const formData = new FormData(commentForm);
-
-                    var commentXhttp = new XMLHttpRequest();
-                    commentXhttp.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            commentField.value = "";
-                            renderComments();
-                        }
-                    }
-                    commentXhttp.open("POST", "functions.php", true);
-                    commentXhttp.send(formData);
-                }
-            });
-            commentForm.appendChild(postIdField);
-            commentForm.appendChild(commenterField);
-            commentForm.appendChild(commentField);
-            commentForm.appendChild(postComment);
-            commentForm.appendChild(submitComment);
-            postCommentsDiv.appendChild(commentForm);
-            renderComments();
+            openCommentModal(firstPost.postId);
         });
-        innerPostDiv.appendChild(commentBtn);
-        postsDiv.appendChild(innerPostDiv);
+
+        postActions.appendChild(commentBtn);
+        postDiv.appendChild(postActions);
+
+        postsDiv.appendChild(postDiv);
     });
+}
+
+function openCommentModal(postId) {
+    commentModal.style.display = "block";
+    postCommentsDiv.innerHTML = "";
+
+    const commentForm = document.createElement("form");
+    commentForm.id = "commentForm";
+    commentForm.action = "functions.php";
+    commentForm.method = "POST";
+
+    const postIdField = document.createElement("input");
+    postIdField.type = "hidden";
+    postIdField.name = "post_id";
+    postIdField.value = postId;
+
+    const commenterField = document.createElement("input");
+    commenterField.type = "hidden";
+    commenterField.name = "commenter";
+    commenterField.value = document.getElementById("userId").value;
+
+    const commentField = document.createElement("textarea");
+    commentField.name = "comment";
+    commentField.maxLength = 250;
+    commentField.placeholder = "Write a comment...";
+
+    const postComment = document.createElement("input");
+    postComment.type = "hidden";
+    postComment.name = "post_comment";
+    postComment.value = "true";
+
+    const submitComment = document.createElement("button");
+    submitComment.type = "submit";
+    submitComment.textContent = "Comment";
+
+    commentForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (commentField.value === "") {
+            return;
+        } else if (commentField.value !== "") {
+            const formData = new FormData(commentForm);
+
+            var commentXhttp = new XMLHttpRequest();
+            commentXhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    commentField.value = "";
+                    renderComments();
+                }
+            }
+            commentXhttp.open("POST", "functions.php", true);
+            commentXhttp.send(formData);
+        }
+    });
+
+    commentForm.appendChild(postIdField);
+    commentForm.appendChild(commenterField);
+    commentForm.appendChild(commentField);
+    commentForm.appendChild(postComment);
+    commentForm.appendChild(submitComment);
+
+    postCommentsDiv.appendChild(commentForm);
+
+    renderComments();
 }
 
 function renderComments() {
@@ -209,7 +315,12 @@ function renderComments() {
 
             commentContainer.appendChild(commenter);
             commentContainer.appendChild(commentContent);
+
             commentsDiv.appendChild(commentContainer);
         });
+    })
+    .catch(error => {
+        console.error("Error fetching comments:", error);
+        commentsDiv.innerHTML = "Error loading comments.";
     });
 }
