@@ -226,6 +226,7 @@ body {
     background: transparent;
     min-width: 0;
     height: 100vh;
+    max-height: 100vh;
 }
 
 /* Profile Header */
@@ -310,19 +311,23 @@ body {
 /* Posts Container */
 .posts-container {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
-    padding: 20px 40px 30px 40px;
+    padding: 0;
     background: transparent;
+    scroll-behavior: smooth;
+    height: 100%;
+    max-height: calc(100vh - 140px);
+    width: 100%;
 }
 
 .posts {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    max-width: 680px;
-    margin: 0 auto;
     width: 100%;
+    max-width: none;
+    padding: 20px 0 30px 0;
 }
 
 /* Post Card */
@@ -335,6 +340,12 @@ body {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     border: 2px solid transparent;
+    min-height: fit-content;
+    width: 680px;
+    max-width: 680px;
+    flex-shrink: 0;
+    margin: 0 auto;
+    position: relative;
 }
 
 .post:hover,
@@ -386,6 +397,12 @@ body {
     margin: 0 0 4px 0;
 }
 
+.post-user-details p {
+    margin: 0;
+    font-size: 14px;
+    color: #65676b;
+}
+
 .post-category {
     display: inline-block;
     padding: 4px 12px;
@@ -427,27 +444,104 @@ body {
     word-wrap: break-word;
 }
 
-/* Post Image */
+/* Post Image Container - Single Image */
 .post-image-container {
     width: 100%;
     background-color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 300px;
+    max-height: 450px;
 }
 
 .post-image {
     width: 100%;
     height: auto;
-    max-height: 600px;
+    min-height: 300px;
+    max-height: 450px;
     display: block;
-    object-fit: contain;
+    object-fit: cover;
     background-color: #000;
 }
 
-/* Comment Button */
-.post button,
+/* Multi-Image Layouts */
+.post-image-container.multi-image {
+    display: grid;
+    gap: 2px;
+    background-color: #000;
+    min-height: 300px;
+    max-height: 450px;
+}
+
+/* Two Images Layout */
+.post-image-container.two-images {
+    grid-template-columns: 1fr 1fr;
+}
+
+.post-image-container.two-images .post-image {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    max-height: 450px;
+    object-fit: cover;
+}
+
+/* Three or More Images Layout */
+.post-image-container.multi-image:not(.two-images) {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 225px;
+    max-height: 450px;
+}
+
+.post-image-container.multi-image:not(.two-images) .post-image {
+    width: 100%;
+    height: 100%;
+    min-height: 225px;
+    object-fit: cover;
+}
+
+/* First image spans both rows if there are 3+ images */
+.post-image-container.multi-image:not(.two-images) .post-image:first-child {
+    grid-row: 1 / 3;
+    min-height: 450px;
+}
+
+/* Post Actions */
+.post-actions {
+    width: 100%;
+    border-top: 1px solid #e4e6eb;
+}
+
 .post-action-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: white;
+    color: #65676b;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 0 0 16px 16px;
+}
+
+.post-action-btn:hover {
+    background: linear-gradient(135deg, #f0f2f5 0%, #e8f5e8 100%);
+    color: #4a7c4a;
+}
+
+.post-action-btn::before {
+    content: "💬";
+    font-size: 18px;
+}
+
+/* Legacy support for old button structure */
+.post > button {
     width: 100%;
     padding: 12px;
     border: none;
@@ -465,14 +559,12 @@ body {
     border-radius: 0 0 16px 16px;
 }
 
-.post button:hover,
-.post-action-btn:hover {
+.post > button:hover {
     background: linear-gradient(135deg, #f0f2f5 0%, #e8f5e8 100%);
     color: #4a7c4a;
-    transform: scale(1.05);
 }
 
-.post button::before {
+.post > button::before {
     content: "💬";
     font-size: 18px;
 }
@@ -725,8 +817,11 @@ body {
         padding: 20px;
     }
 
-    .profile-header button {
+    .profile-header button,
+    .follow-btn,
+    #followButton {
         position: static;
+        transform: none;
         margin-top: 15px;
     }
 
@@ -744,6 +839,10 @@ body {
         width: 95%;
         margin: 10% auto;
         padding: 20px;
+    }
+
+    .post-image-container.multi-image:not(.two-images) {
+        grid-auto-rows: 200px;
     }
 }
 
@@ -783,7 +882,12 @@ body {
         font-size: 14px;
     }
 
-    .post button {
+    .post button,
+    .post-action-btn {
         font-size: 14px;
+    }
+
+    .post-image-container.multi-image:not(.two-images) {
+        grid-auto-rows: 150px;
     }
 }

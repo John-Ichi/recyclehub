@@ -145,7 +145,7 @@ a[href="profile.php"]:hover {
 }
 
 /* Dropdown Button */
-.category-dropdown-btn {
+#categoryDropdownBtn {
     width: 100%;
     padding: 10px 16px;
     background: linear-gradient(135deg, #4a7c4a 0%, #5fa05f 100%);
@@ -162,24 +162,24 @@ a[href="profile.php"]:hover {
     box-shadow: 0 4px 12px rgba(74, 124, 74, 0.3);
 }
 
-.category-dropdown-btn:hover {
+#categoryDropdownBtn:hover {
     background: linear-gradient(135deg, #3d6a3d 0%, #4a7c4a 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(74, 124, 74, 0.4);
 }
 
-.category-dropdown-btn::after {
+#categoryDropdownBtn::after {
     content: "▼";
     font-size: 10px;
     transition: transform 0.3s;
 }
 
-.category-dropdown-btn.active::after {
+#categoryDropdownBtn.active::after {
     transform: rotate(180deg);
 }
 
 /* Dropdown Content */
-.category-dropdown-content {
+#categoryDropdownContent {
     display: none;
     flex-direction: column;
     gap: 4px;
@@ -192,7 +192,7 @@ a[href="profile.php"]:hover {
     animation: slideDown 0.3s ease-out;
 }
 
-.category-dropdown-content.show {
+#categoryDropdownContent.show {
     display: flex;
 }
 
@@ -230,6 +230,15 @@ a[href="profile.php"]:hover {
     accent-color: #4a7c4a;
 }
 
+/* Specific IDs for checkboxes */
+#plastic, #paper, #glass, #wood, #scrapMetal, #other {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: #4a7c4a;
+}
+
 /* Create Post Wrapper - Sticky */
 .create-post-wrapper {
     position: sticky;
@@ -244,7 +253,7 @@ a[href="profile.php"]:hover {
 }
 
 /* Create Post Card */
-.create-post-card {
+#createPostCard {
     background-color: white;
     border-radius: 16px;
     padding: 18px 22px;
@@ -256,7 +265,7 @@ a[href="profile.php"]:hover {
     border: 2px solid transparent;
 }
 
-.create-post-card:hover {
+#createPostCard:hover {
     box-shadow: 0 8px 24px rgba(74, 124, 74, 0.15);
     transform: translateY(-3px);
     border-color: rgba(74, 124, 74, 0.2);
@@ -288,11 +297,11 @@ a[href="profile.php"]:hover {
     transition: background-color 0.3s;
 }
 
-.create-post-card:hover .create-post-input {
+#createPostCard:hover .create-post-input {
     background-color: #e4e6eb;
 }
 
-/* Scrollable */
+/* Scrollable Posts Container */
 .posts {
     flex: 1;
     overflow-y: auto;
@@ -419,12 +428,12 @@ a[href="profile.php"]:hover {
     background-color: #ffffff;
 }
 
+/* Post Image Container - Single Image */
 .post-image-container {
     width: 100%;
     background-color: #000;  
     overflow: hidden;
     margin-bottom: 0;
-    max-height: none; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -440,7 +449,54 @@ a[href="profile.php"]:hover {
     background-color: #000; 
 }
 
-/* Post */
+/* Multi-image layouts */
+.post-image-container.multi-image {
+    display: grid;
+    gap: 3px;
+    background-color: #000;
+    max-height: none;
+}
+
+/* Two images - side by side */
+.post-image-container.two-images {
+    grid-template-columns: 1fr 1fr;
+}
+
+.post-image-container.two-images .post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-height: 600px;
+    min-height: 400px;
+}
+
+/* Three images - first image on left (spans 2 rows), two stacked on right */
+.post-image-container.multi-image:not(.two-images) .post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 200px;
+}
+
+.post-image-container.multi-image:not(.two-images) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    max-height: 600px;
+}
+
+.post-image-container.multi-image:not(.two-images) .post-image:first-child {
+    grid-row: 1 / 3;
+    height: 100%;
+}
+
+/* Four or more images */
+.post-image-container.multi-image:not(.two-images) .post-image:nth-child(4),
+.post-image-container.multi-image:not(.two-images) .post-image:nth-child(5),
+.post-image-container.multi-image:not(.two-images) .post-image:nth-child(6) {
+    grid-row: auto;
+}
+
+/* Post Actions */
 .post-actions {
     display: flex;
     gap: 0;
@@ -499,8 +555,8 @@ a[href="profile.php"]:hover {
     background: #3d6a3d;
 }
 
-/* Modal*/
-.modal {
+/* Modal */
+#postModal, #commentModal, #postDeletionNoticeModal, #warningNoticeModal {
     display: none;
     position: fixed;
     z-index: 2000;
@@ -526,12 +582,23 @@ a[href="profile.php"]:hover {
     width: 90%;
     max-width: 600px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.3s;
+    animation: slideDownModal 0.3s;
     position: relative;
 }
 
-/* Close button comment */
-.close-comment {
+@keyframes slideDownModal {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Close button */
+.close-comment, #closeCommentBtn {
     color: #999;
     float: right;
     font-size: 32px;
@@ -545,18 +612,20 @@ a[href="profile.php"]:hover {
 }
 
 .close-comment:hover,
-.close-comment:focus {
+.close-comment:focus,
+#closeCommentBtn:hover,
+#closeCommentBtn:focus {
     color: #2d4a2d;
 }
 
-/* Form */
+/* Post Form */
 #postForm {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-#postForm input[type="file"] {
+#imageUpload {
     padding: 12px;
     border: 2px dashed #c8dfc8;
     border-radius: 8px;
@@ -565,7 +634,7 @@ a[href="profile.php"]:hover {
     transition: all 0.3s;
 }
 
-#postForm input[type="file"]:hover {
+#imageUpload:hover {
     border-color: #4a7c4a;
     background-color: #e8f5e8;
 }
@@ -619,7 +688,7 @@ a[href="profile.php"]:hover {
     border-color: #4a7c4a;
 }
 
-/*Buttons */
+/* Modal Buttons */
 .modal-buttons {
     display: flex;
     gap: 10px;
@@ -663,7 +732,12 @@ button[name="create_post"]:hover {
     box-shadow: 0 4px 8px rgba(232, 93, 93, 0.3);
 }
 
-/* Comment */
+/* Comment Section */
+#comments {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 .comment {
     padding: 12px 16px;
     background-color: #f9fcf9;
@@ -725,6 +799,14 @@ button[name="create_post"]:hover {
     background-color: #3d6a3d;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(74, 124, 74, 0.3);
+}
+
+/* Notice divs */
+#noticeDiv, #warningNoticeDiv {
+    padding: 15px;
+    background-color: #f9fcf9;
+    border-radius: 8px;
+    margin-top: 15px;
 }
 
 /* Carousel */
@@ -805,42 +887,12 @@ button[name="create_post"]:hover {
     height: 12px;
 }
 
- /*Multi-image*/
-.post-image-container.multi-image {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    background-color: #1a1a1a;
-    max-height: none;
+/* Hidden input for user ID */
+#imageUploadUserId {
+    display: none;
 }
 
-.post-image-container.multi-image .post-image {
-    border-bottom: 3px solid #1a1a1a;
-}
-
-.post-image-container.multi-image .post-image:last-child {
-    border-bottom: none;
-}
-
-
-.post-image-container.multi-image.two-images {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 3px !important;
-    background-color: #000000 !important;
-    padding: 0 !important;
-    max-height: 600px !important;
-}
-
-.post-image-container.multi-image.two-images .post-image {
-    border: none !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important; 
-    max-height: 600px !important;
-}
-
-
+/* Responsive Design */
 @media (max-width: 768px) {
     body {
         flex-direction: column;
