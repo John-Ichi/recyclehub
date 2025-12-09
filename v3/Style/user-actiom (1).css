@@ -1,0 +1,428 @@
+/* RecycleHub Theme CSS - Improved */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e8efe8;
+    color: #333;
+    padding: 0;
+    margin: 0;
+}
+
+/* Button Container at Top */
+.button-container {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background-color: #e8efe8;
+}
+
+/* Action Buttons */
+#returnToDashboard,
+#warningBtn,
+#banBtn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#returnToDashboard {
+    background-color: #6c9976;
+    color: white;
+}
+
+#returnToDashboard:hover {
+    background-color: #5a8c6a;
+}
+
+#warningBtn {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+#warningBtn:hover {
+    background-color: #ec971f;
+}
+
+#banBtn {
+    background-color: #e07a7a;
+    color: white;
+}
+
+#banBtn:hover {
+    background-color: #d66565;
+}
+
+/* Confirmation Message */
+#confirmationMessage {
+    background-color: #d4e7d4;
+    color: #2d5a3d;
+    padding: 15px 20px;
+    margin: 0 20px 20px 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+#confirmationMessage:empty {
+    display: none;
+}
+
+/* Main Content Area */
+.main-content {
+    display: flex;
+    gap: 20px;
+    padding: 0 20px 30px 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Left Column - User Info and Filters */
+.left-column {
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Right Column - Posts */
+.right-column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* User Info Section */
+.userInfo {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.userInfo h2 {
+    color: #2d5a3d;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.userInfo #userId {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+}
+
+.userInfo p {
+    color: #666;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Filter Section */
+.filterSelect {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filterSelect label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    margin-bottom: 12px;
+    padding: 5px 0;
+}
+
+.filterSelect input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Posts Container */
+.posts {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Post Card - Compatible with JS structure */
+.post {
+    background-color: white;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* Username at top - first h4 in post */
+.post > h4:first-child {
+    font-size: 15px;
+    color: #333;
+    margin: 0;
+    padding: 16px 20px;
+    font-weight: 600;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Add avatar circle before username */
+.post > h4:first-child::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #8fae96;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Delete Button - first button after h4 */
+.post > button:first-of-type {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    padding: 8px 20px;
+    background-color: #e07a7a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+}
+
+.post > button:first-of-type:hover {
+    background-color: #d66565;
+}
+
+/* Caption - p element */
+.post > p {
+    padding: 0 20px 16px 20px;
+    color: #333;
+    line-height: 1.5;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Post Images */
+.post > img {
+    width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+    display: block;
+    margin: 0 0 16px 0;
+}
+
+/* View Comments Button - last button */
+.post > button:last-child {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0 20px 20px 20px;
+    padding: 12px 20px;
+    background-color: #6c9976;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.post > button:last-child:hover {
+    background-color: #5a8c6a;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+    color: #2d5a3d;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.close:hover,
+.close:focus {
+    color: #333;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal input[type="text"],
+.modal input[type="password"],
+.modal input[type="hidden"],
+.modal textarea,
+.modal select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.modal input[type="hidden"] {
+    display: none;
+}
+
+.modal textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modal select {
+    cursor: pointer;
+}
+
+.modal button[type="submit"] {
+    padding: 12px;
+    background-color: #4a7c59;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button[type="submit"]:hover {
+    background-color: #3d6849;
+}
+
+/* Comments Section */
+#comments {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.comment {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.comment h4 {
+    color: #4a7c59;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.comment p {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* No comments message */
+#comments > p {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .left-column {
+        flex: 0 0 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        padding: 0 15px 20px 15px;
+    }
+
+    .left-column {
+        flex: 1;
+        width: 100%;
+    }
+
+    .right-column {
+        flex: 1;
+        width: 100%;
+    }
+
+    .button-container {
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+    
+    .post > button:first-of-type {
+        position: static;
+        margin: 0 20px 10px 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .post > h4:first-child {
+        padding-bottom: 10px;
+    }
+}
